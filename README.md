@@ -19,5 +19,4 @@ You need to have [Sass](http://sass-lang.com/) installed and available on the pa
 
 ## Current limitations
 
-- Imported files are not marked as dependencies. Primary files need to be modified for rebuilds.
 - UTF8-encoding is assumed for all input files.

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:utf/utf.dart';
 import 'package:path/path.dart';
 
+/// Facade for Sass-transformations.
 class Sass {
 
   bool scss = false;
@@ -12,7 +13,9 @@ class Sass {
   List<String> loadPath = [];
   bool lineNumbers = false;
   bool compass = false;
+  static final RegExp _importRegex = new RegExp(r"@import\s+(.+?);");
 
+  /// Transforms given Sass-source to CSS.
   Future<String> transform(String content) {
     var flags = [];
 
@@ -32,7 +35,7 @@ class Sass {
       flags..add('--load-path')..add(dir);
     });
 
-    return Process.start('sass', flags).then((Process process) {
+    return Process.start("sass", flags).then((Process process) {
       StringBuffer errors = new StringBuffer();
       StringBuffer output = new StringBuffer();
 
@@ -50,4 +53,11 @@ class Sass {
       });
     });
   }
+
+  /// Returns the imports defined in given source.
+  static List<String> resolveImportsFromSource(String source) =>
+    _importRegex.allMatches(source).map((Match m) {
+      var str = m.group(1);
+      return str.substring(1, str.length-1);
+    });
 }
