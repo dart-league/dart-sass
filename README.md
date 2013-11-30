@@ -15,6 +15,8 @@ Simply add the following lines to your `pubspec.yaml`:
 After adding the transformer your `.sass` and `.scss` files will be automatically transformed to
 corresponding `.css` files.
 
+You need to have [Sass](http://sass-lang.com/) installed and available on the path.
+
 ## Current limitations
 
 - Imported files are not marked as dependencies. Primary files need to be modified for rebuilds.
