@@ -8,9 +8,9 @@ import 'sass.dart';
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
 class SassTransformer extends Transformer {
 
-  final Map configuration;
+  final BarbackSettings settings;
 
-  SassTransformer.asPlugin(this.configuration);
+  SassTransformer.asPlugin(this.settings);
 
   bool _isPrimaryPath(String path) {
     if (posix.basename(path).startsWith('_'))
@@ -36,10 +36,19 @@ class SassTransformer extends Transformer {
     });
 
   Future apply(Transform transform) {
+    print("settings: ${settings.configuration}");
     AssetId primaryAssetId = transform.primaryInput.id;
 
     return _readImportsRecursively(transform, primaryAssetId).then((_) {
       Sass sass = new Sass();
+
+      String executable = settings.configuration['executable'];
+      if (executable != null)
+        sass.executable = executable;
+
+      sass.style = settings.configuration['style'];
+      sass.compass = settings.configuration['compass'];
+      sass.lineNumbers = settings.configuration['line-numbers'];
 
       if (primaryAssetId.extension == '.scss')
         sass.scss = true;

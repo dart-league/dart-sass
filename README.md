@@ -17,6 +17,17 @@ corresponding `.css` files.
 
 You need to have [Sass](http://sass-lang.com/) installed and available on the path.
 
+## Configuration
+
+You can also pass options to Sass if necessary:
+
+    transformers:
+      - sass
+          executable: /path/to/sass
+          compass: true
+          line-numbers: true
+          style: compact
+
 ## Current limitations
 
 - UTF8-encoding is assumed for all input files.
