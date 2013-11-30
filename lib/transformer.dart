@@ -36,7 +36,6 @@ class SassTransformer extends Transformer {
     });
 
   Future apply(Transform transform) {
-    print("settings: ${settings.configuration}");
     AssetId primaryAssetId = transform.primaryInput.id;
 
     return _readImportsRecursively(transform, primaryAssetId).then((_) {
