@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 /// Facade for Sass-transformations.
 class Sass {
 
+  String executable = "sass";
   bool scss = false;
   String style = null; // nested, compact, compressed, expanded
   List<String> loadPath = [];
@@ -35,7 +36,7 @@ class Sass {
       flags..add('--load-path')..add(dir);
     });
 
-    return Process.start("sass", flags).then((Process process) {
+    return Process.start(executable, flags).then((Process process) {
       StringBuffer errors = new StringBuffer();
       StringBuffer output = new StringBuffer();
 
