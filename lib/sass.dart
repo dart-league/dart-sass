@@ -62,7 +62,7 @@ class Sass {
     _importRegex.allMatches(source).map((Match m) {
       var str = m.group(1);
       return str.substring(1, str.length-1);
-    });
+    }).toList();
 }
 
 /// Exception thrown when there's a problem transforming Sass.

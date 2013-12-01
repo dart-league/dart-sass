@@ -7,8 +7,11 @@ import 'package:barback/barback.dart';
 
 main() {
 
-  Future<bool> isPrimary(String path) =>
-    new SassTransformer.asPlugin({}).isPrimary(new Asset.fromString(new AssetId('my_package', path), 'my-contents'));
+  Future<bool> isPrimary(String path) {
+    var asset = new Asset.fromString(new AssetId('my_package', path), 'my-contents');
+    var settings = new BarbackSettings({}, BarbackMode.DEBUG);
+    return new SassTransformer.asPlugin(settings).isPrimary(asset);
+  }
 
   group('detecting primary assets', () {
     test('supported extensions should be recognized', () {
