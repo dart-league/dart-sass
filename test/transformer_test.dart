@@ -1,4 +1,4 @@
-library yoke.utils.test;
+library sass.transformer.test;
 
 import 'dart:async';
 import 'package:unittest/unittest.dart';
