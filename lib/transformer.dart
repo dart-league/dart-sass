@@ -59,6 +59,8 @@ class SassTransformer extends Transformer {
           var newId = primaryAssetId.changeExtension('.css');
           transform.addOutput(new Asset.fromString(newId, output));
         }));
-    });
+    }).catchError((SassException e) {
+      transform.logger.error("error: ${e.message}");
+    }, test: (e) => e is SassException);
   }
 }

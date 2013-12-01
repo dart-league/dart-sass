@@ -49,10 +49,12 @@ class Sass {
         if (exitCode == 0) {
           return output.toString();
         } else {
-          throw new Exception("error while executing sass: $errors");
+          throw new SassException(errors.toString());
         }
       });
-    });
+    }).catchError((ProcessException e) {
+      throw new SassException(e.toString());
+    }, test: (e) => e is ProcessException);
   }
 
   /// Returns the imports defined in given source.
@@ -61,4 +63,14 @@ class Sass {
       var str = m.group(1);
       return str.substring(1, str.length-1);
     });
+}
+
+/// Exception thrown when there's a problem transforming Sass.
+class SassException implements Exception {
+
+  final String message;
+
+  SassException(this.message);
+
+  String toString() => message;
 }
