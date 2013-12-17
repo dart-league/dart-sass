@@ -20,6 +20,8 @@ class Sass {
   Future<String> transform(String content) {
     var flags = [];
 
+    flags.add('--no-cache');
+
     if (scss)
       flags.add('--scss');
 
