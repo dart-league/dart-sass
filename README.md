@@ -24,7 +24,7 @@ You need to have [Sass](http://sass-lang.com/) installed and available on the pa
 You can also pass options to Sass if necessary:
 
     transformers:
-      - sass
+      - sass:
           executable: /path/to/sass
           compass: true
           line-numbers: true
