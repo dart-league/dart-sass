@@ -51,7 +51,7 @@ class Sass {
         if (exitCode == 0) {
           return output.toString();
         } else {
-          throw new SassException(errors.toString());
+          throw new SassException(errors.length != 0 ? errors.toString() : output.toString());
         }
       });
     }).catchError((ProcessException e) {
