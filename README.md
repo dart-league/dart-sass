@@ -30,6 +30,17 @@ You can also pass options to Sass if necessary:
           line-numbers: true
           style: compact
 
+## Using SassC
+
+You can use [SassC](https://github.com/hcatlin/sassc) instead of normal Sass by specifying executable
+as 'sassc' (or any path ending with 'sassc'):
+
+    transformers:
+      - sass:
+          executable: sassc  # or /path/to/sassc
+
+SassC only supports `.scss`-files and does not support Compass.
+
 ## Current limitations
 
 - UTF8-encoding is assumed for all input files.

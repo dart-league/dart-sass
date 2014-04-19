@@ -41,24 +41,37 @@ class Sass {
   }
 
   List<String> _createFlags() {
+    bool sassc = executable.endsWith('sassc');
     var flags = [];
 
-    flags.add('--no-cache');
+    if (sassc) {
+      // check that we don't try to use features not supported by sassc
+      if (!scss)
+        throw new SassException("SassC supports only scss syntax");
 
-    if (scss)
-      flags.add('--scss');
+      if (compass)
+        throw new SassException("SassC does not support Compass");
 
+    } else {
+      // classic sass
+      flags.add('--no-cache');
+
+      if (scss)
+        flags.add('--scss');
+
+      if (compass)
+        flags.add('--compass');
+    }
+
+    // we have to use the short argument names here since SassC does not support the long ones
     if (lineNumbers)
-      flags.add('--line-numbers');
-
-    if (compass)
-      flags.add('--compass');
+      flags.add('-l');
 
     if (style != null)
-      flags..add('--style')..add(style);
+      flags..add('-t')..add(style);
 
     loadPath.forEach((dir) {
-      flags..add('--load-path')..add(dir);
+      flags..add('-I')..add(dir);
     });
 
     return flags;
