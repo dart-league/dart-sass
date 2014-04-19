@@ -9,6 +9,7 @@
 
 Simply add the following lines to your `pubspec.yaml`:
 
+    :::yaml
     dependencies:
       sass: any
     transformers:
@@ -23,6 +24,7 @@ You need to have [Sass](http://sass-lang.com/) installed and available on the pa
 
 You can also pass options to Sass if necessary:
 
+    :::yaml
     transformers:
       - sass:
           executable: /path/to/sass
@@ -35,6 +37,7 @@ You can also pass options to Sass if necessary:
 You can use [SassC](https://github.com/hcatlin/sassc) instead of normal Sass by specifying executable
 as 'sassc' (or any path ending with 'sassc'):
 
+    :::yaml
     transformers:
       - sass:
           executable: sassc  # or /path/to/sassc
