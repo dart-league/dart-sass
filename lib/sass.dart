@@ -3,7 +3,6 @@ library sass;
 import 'dart:async';
 import 'dart:io';
 import 'package:utf/utf.dart';
-import 'package:path/path.dart';
 
 /// Facade for Sass-transformations.
 class Sass {
@@ -18,25 +17,7 @@ class Sass {
 
   /// Transforms given Sass-source to CSS.
   Future<String> transform(String content) {
-    var flags = [];
-
-    flags.add('--no-cache');
-
-    if (scss)
-      flags.add('--scss');
-
-    if (lineNumbers)
-      flags.add('--line-numbers');
-
-    if (compass)
-      flags.add('--compass');
-
-    if (style != null)
-      flags..add('--style')..add(style);
-
-    loadPath.forEach((dir) {
-      flags..add('--load-path')..add(dir);
-    });
+    var flags = _createFlags();
 
     return Process.start(executable, flags).then((Process process) {
       StringBuffer errors = new StringBuffer();
@@ -57,6 +38,30 @@ class Sass {
     }).catchError((ProcessException e) {
       throw new SassException(e.toString());
     }, test: (e) => e is ProcessException);
+  }
+
+  List<String> _createFlags() {
+    var flags = [];
+
+    flags.add('--no-cache');
+
+    if (scss)
+      flags.add('--scss');
+
+    if (lineNumbers)
+      flags.add('--line-numbers');
+
+    if (compass)
+      flags.add('--compass');
+
+    if (style != null)
+      flags..add('--style')..add(style);
+
+    loadPath.forEach((dir) {
+      flags..add('--load-path')..add(dir);
+    });
+
+    return flags;
   }
 
   /// Returns the imports defined in given source.
