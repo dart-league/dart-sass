@@ -23,7 +23,14 @@ class SassTransformer extends Transformer {
   Future<bool> isPrimary(Asset input) =>
     new Future.value(_isPrimaryPath(input.id.path));
 
-  /// Reads all the imports of module so that Bacback realizes that we depend on them.
+  /// Reads all the imports of module so that Barback realizes that we depend on them.
+  ///
+  /// When Barback calls the transformer to process foo.scss, it will keep track of all
+  /// read-calls so it knows which files foo.scss is dependent on. So if foo.scss
+  /// imports bar.scss (and therefore we perform dummy read on bar.scss as well),
+  /// Barback knows that if bar.scss changes, it will need to recompile foo.scss.
+  /// This doesn't matter when executing a batch build with "pub build", but it's
+  /// really important with "pub serve".
   Future _readImportsRecursively(Transform transform, AssetId assetId) =>
     transform.readInputAsString(assetId).then((source) {
       var imports = Sass.resolveImportsFromSource(source);
