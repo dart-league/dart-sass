@@ -36,13 +36,21 @@ class SassTransformer extends Transformer {
   Future _readImportsRecursively(Transform transform, AssetId assetId) =>
     transform.readInputAsString(assetId).then((source) {
       var imports = Sass.resolveImportsFromSource(source);
+
+      if (options.compass) {
+        imports = _excludeCompassImports(imports);
+      }
+
       return Future.wait(imports.map((module) {
         var name = module.contains('.') ? module : "_$module${assetId.extension}";
-
         var path = posix.join(posix.dirname(assetId.path), name);
         return _readImportsRecursively(transform, new AssetId(assetId.package, path));
       }));
     });
+
+  Iterable<String> _excludeCompassImports(Iterable<String> imports) {
+    return imports.where((import) => !import.startsWith("compass"));
+  }
 
   Future apply(Transform transform) {
     AssetId primaryAssetId = transform.primaryInput.id;
