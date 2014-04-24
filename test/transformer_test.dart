@@ -2,15 +2,17 @@ library sass.transformer.test;
 
 import 'dart:async';
 import 'package:unittest/unittest.dart';
+import 'package:mock/mock.dart';
 import 'package:sass/transformer.dart';
 import 'package:barback/barback.dart';
+import 'package:sass/sass.dart';
 
 main() {
-
-  SassTransformer createTransformer([Map configuration]) {
+  SassTransformer createTransformer({Map configuration, Sass sass}) {
     configuration = configuration != null ? configuration : {};
+    sass = sass != null ? sass : new SassMock();
     var settings = new BarbackSettings(configuration, BarbackMode.DEBUG);
-    return new SassTransformer.asPlugin(settings);
+    return new SassTransformer(settings, sass);
   }
 
   Future<bool> isPrimary(String path) {
@@ -35,4 +37,8 @@ main() {
     });
   });
 
+}
+
+class SassMock extends Mock implements Sass {
+  noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }

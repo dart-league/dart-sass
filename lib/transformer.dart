@@ -9,10 +9,14 @@ import 'sass.dart';
 class SassTransformer extends Transformer {
   final BarbackSettings settings;
   final TransformerOptions options;
+  final Sass _sass;
 
-  SassTransformer.asPlugin(BarbackSettings settings) :
+  SassTransformer(BarbackSettings settings, this._sass) :
     settings = settings,
     options = new TransformerOptions.parse(settings.configuration);
+
+  SassTransformer.asPlugin(BarbackSettings settings) :
+    this(settings, new Sass());
 
   bool _isPrimaryPath(String path) {
     if (posix.basename(path).startsWith('_'))
@@ -56,20 +60,19 @@ class SassTransformer extends Transformer {
     AssetId primaryAssetId = transform.primaryInput.id;
 
     return _readImportsRecursively(transform, primaryAssetId).then((_) {
-      Sass sass = new Sass();
+      _sass.executable = options.executable;
+      _sass.style = options.style;
+      _sass.compass = options.compass;
+      _sass.lineNumbers = options.lineNumbers;
 
-      sass.executable = options.executable;
-      sass.style = options.style;
-      sass.compass = options.compass;
-      sass.lineNumbers = options.lineNumbers;
+      if (primaryAssetId.extension == '.scss') {
+        _sass.scss = true;
+      }
 
-      if (primaryAssetId.extension == '.scss')
-        sass.scss = true;
-
-      sass.loadPath.add(posix.dirname(primaryAssetId.path));
+      _sass.loadPath.add(posix.dirname(primaryAssetId.path));
 
       return transform.primaryInput.readAsString().then((content) =>
-        sass.transform(content).then((output) {
+        _sass.transform(content).then((output) {
           var newId = primaryAssetId.changeExtension('.css');
           transform.addOutput(new Asset.fromString(newId, output));
         }));
