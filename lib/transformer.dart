@@ -99,6 +99,6 @@ class TransformerOptions {
         executable: configuration["executable"],
         style: configuration["style"],
         compass: configuration["compass"],
-        lineNumbers: configuration["lineNumbers"]);
+        lineNumbers: configuration["line-numbers"]);
   }
 }
