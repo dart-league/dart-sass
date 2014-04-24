@@ -7,10 +7,16 @@ import 'sass.dart';
 
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
 class SassTransformer extends Transformer {
-
   final BarbackSettings settings;
+  final TransformerOptions options;
+  final Sass _sass;
 
-  SassTransformer.asPlugin(this.settings);
+  SassTransformer(BarbackSettings settings, this._sass) :
+    settings = settings,
+    options = new TransformerOptions.parse(settings.configuration);
+
+  SassTransformer.asPlugin(BarbackSettings settings) :
+    this(settings, new Sass());
 
   bool _isPrimaryPath(String path) {
     if (posix.basename(path).startsWith('_'))
@@ -34,40 +40,65 @@ class SassTransformer extends Transformer {
   Future _readImportsRecursively(Transform transform, AssetId assetId) =>
     transform.readInputAsString(assetId).then((source) {
       var imports = Sass.resolveImportsFromSource(source);
+
+      if (options.compass) {
+        imports = _excludeCompassImports(imports);
+      }
+
       return Future.wait(imports.map((module) {
         var name = module.contains('.') ? module : "_$module${assetId.extension}";
-
         var path = posix.join(posix.dirname(assetId.path), name);
         return _readImportsRecursively(transform, new AssetId(assetId.package, path));
       }));
     });
 
+  Iterable<String> _excludeCompassImports(Iterable<String> imports) {
+    return imports.where((import) => !import.startsWith("compass"));
+  }
+
   Future apply(Transform transform) {
     AssetId primaryAssetId = transform.primaryInput.id;
 
     return _readImportsRecursively(transform, primaryAssetId).then((_) {
-      Sass sass = new Sass();
+      _sass.executable = options.executable;
+      _sass.style = options.style;
+      _sass.compass = options.compass;
+      _sass.lineNumbers = options.lineNumbers;
 
-      String executable = settings.configuration['executable'];
-      if (executable != null)
-        sass.executable = executable;
+      if (primaryAssetId.extension == '.scss') {
+        _sass.scss = true;
+      }
 
-      sass.style = settings.configuration['style'];
-      sass.compass = settings.configuration['compass'];
-      sass.lineNumbers = settings.configuration['line-numbers'];
-
-      if (primaryAssetId.extension == '.scss')
-        sass.scss = true;
-
-      sass.loadPath.add(posix.dirname(primaryAssetId.path));
+      _sass.loadPath.add(posix.dirname(primaryAssetId.path));
 
       return transform.primaryInput.readAsString().then((content) =>
-        sass.transform(content).then((output) {
+        _sass.transform(content).then((output) {
           var newId = primaryAssetId.changeExtension('.css');
           transform.addOutput(new Asset.fromString(newId, output));
         }));
     }).catchError((SassException e) {
       transform.logger.error("error: ${e.message}");
     }, test: (e) => e is SassException);
+  }
+}
+
+class TransformerOptions {
+  final String executable;
+  final String style;
+  final bool compass;
+  final bool lineNumbers;
+
+  TransformerOptions({String executable, String style, bool compass, bool lineNumbers}) :
+    executable = executable != null ? executable : "sass",
+    style = style,
+    compass = compass != null ? compass : false,
+    lineNumbers = lineNumbers != null ? lineNumbers : false;
+
+  factory TransformerOptions.parse(Map configuration) {
+    return new TransformerOptions(
+        executable: configuration["executable"],
+        style: configuration["style"],
+        compass: configuration["compass"],
+        lineNumbers: configuration["line-numbers"]);
   }
 }
