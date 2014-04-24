@@ -7,10 +7,12 @@ import 'sass.dart';
 
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
 class SassTransformer extends Transformer {
-
   final BarbackSettings settings;
+  final TransformerOptions options;
 
-  SassTransformer.asPlugin(this.settings);
+  SassTransformer.asPlugin(BarbackSettings settings) :
+    settings = settings,
+    options = new TransformerOptions.parse(settings.configuration);
 
   bool _isPrimaryPath(String path) {
     if (posix.basename(path).startsWith('_'))
@@ -48,13 +50,10 @@ class SassTransformer extends Transformer {
     return _readImportsRecursively(transform, primaryAssetId).then((_) {
       Sass sass = new Sass();
 
-      String executable = settings.configuration['executable'];
-      if (executable != null)
-        sass.executable = executable;
-
-      sass.style = settings.configuration['style'];
-      sass.compass = settings.configuration['compass'];
-      sass.lineNumbers = settings.configuration['line-numbers'];
+      sass.executable = options.executable;
+      sass.style = options.style;
+      sass.compass = options.compass;
+      sass.lineNumbers = options.lineNumbers;
 
       if (primaryAssetId.extension == '.scss')
         sass.scss = true;
@@ -69,5 +68,26 @@ class SassTransformer extends Transformer {
     }).catchError((SassException e) {
       transform.logger.error("error: ${e.message}");
     }, test: (e) => e is SassException);
+  }
+}
+
+class TransformerOptions {
+  final String executable;
+  final String style;
+  final bool compass;
+  final bool lineNumbers;
+
+  TransformerOptions({String executable, String style, bool compass, bool lineNumbers}) :
+    executable = executable != null ? executable : "sass",
+    style = style,
+    compass = compass != null ? compass : false,
+    lineNumbers = lineNumbers != null ? lineNumbers : false;
+
+  factory TransformerOptions.parse(Map configuration) {
+    return new TransformerOptions(
+        executable: configuration["executable"],
+        style: configuration["style"],
+        compass: configuration["compass"],
+        lineNumbers: configuration["lineNumbers"]);
   }
 }

@@ -7,10 +7,15 @@ import 'package:barback/barback.dart';
 
 main() {
 
+  SassTransformer createTransformer([Map configuration]) {
+    configuration = configuration != null ? configuration : {};
+    var settings = new BarbackSettings(configuration, BarbackMode.DEBUG);
+    return new SassTransformer.asPlugin(settings);
+  }
+
   Future<bool> isPrimary(String path) {
     var asset = new Asset.fromString(new AssetId('my_package', path), 'my-contents');
-    var settings = new BarbackSettings({}, BarbackMode.DEBUG);
-    return new SassTransformer.asPlugin(settings).isPrimary(asset);
+    return createTransformer().isPrimary(asset);
   }
 
   group('detecting primary assets', () {
