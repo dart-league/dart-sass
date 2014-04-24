@@ -1,0 +1,7 @@
+# v0.1.1 (2014-04-24)
+
+- Ignore Compass imports when reading the dependencies of a module. (Thanks to Dan Schultz.)
+
+# v0.1.0 (2014-04-19)
+
+- Support using [SassC](https://github.com/hcatlin/sassc) instead of vanilla Sass.
