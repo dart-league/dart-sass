@@ -63,7 +63,7 @@ main() {
             ..when(callsTo("get primaryInput")).alwaysReturn(asset)
             ..when(callsTo("readInputAsString", asset.id)).thenReturn(asset.readAsString());
 
-        transformer.apply(transform).then(expectAsync1((_) {
+        transformer.apply(transform).then(expectAsync((_) {
           var assetPathContainsCompass = predicate(
               (AssetId assetId) => assetId.path.contains("compass"),
               "Asset path contains 'compass'");
