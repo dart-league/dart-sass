@@ -26,8 +26,9 @@ class SassTransformer extends Transformer {
     return extension == '.sass' || extension == '.scss';
   }
 
-  Future<bool> isPrimary(Asset input) =>
-    new Future.value(_isPrimaryPath(input.id.path));
+  Future<bool> isPrimary(input) =>
+    // Hack to make the transformer compatible with Barback 0.13.x
+    new Future.value(_isPrimaryPath(input is Asset ? input.id.path : input.path));
 
   /// Reads all the imports of module so that Barback realizes that we depend on them.
   ///
