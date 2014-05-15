@@ -1,3 +1,7 @@
+# v0.2.0 (2014-05-15)
+
+- Exclude URL-imports when parsing imports. (Thanks to Vikraman Choudhury.)
+
 # v0.1.1 (2014-04-24)
 
 - Ignore Compass imports when reading the dependencies of a module. (Thanks to Dan Schultz.)
