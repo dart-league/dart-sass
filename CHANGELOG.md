@@ -1,3 +1,7 @@
+# v0.2.x (yyyy-mm-dd)
+
+- Implemented `DeclaringTransformer` interface so Barback can optimize the asset graph.
+
 # v0.2.0 (2014-05-15)
 
 - Exclude URL-imports when parsing imports. (Thanks to Vikraman Choudhury.)

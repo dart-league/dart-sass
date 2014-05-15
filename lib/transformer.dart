@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 import 'sass.dart';
 
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
-class SassTransformer extends Transformer {
+class SassTransformer extends Transformer implements DeclaringTransformer {
   final BarbackSettings settings;
   final TransformerOptions options;
   final Sass _sass;
@@ -28,6 +28,8 @@ class SassTransformer extends Transformer {
 
   Future<bool> isPrimary(Asset input) =>
     new Future.value(_isPrimaryPath(input.id.path));
+
+
 
   /// Reads all the imports of module so that Barback realizes that we depend on them.
   ///
@@ -79,6 +81,13 @@ class SassTransformer extends Transformer {
     }).catchError((SassException e) {
       transform.logger.error("error: ${e.message}");
     }, test: (e) => e is SassException);
+  }
+
+  Future declareOutputs(DeclaringTransform transform) {
+    AssetId primaryAssetId = transform.primaryInput.id;
+    transform.declareOutput(primaryAssetId.changeExtension('.css'));
+
+    return new Future.value();
   }
 }
 
