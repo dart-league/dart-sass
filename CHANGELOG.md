@@ -1,6 +1,7 @@
-# v0.2.x (yyyy-mm-dd)
+# v0.2.1 (2014-05-15)
 
 - Implemented `DeclaringTransformer` interface so Barback can optimize the asset graph.
+- Compatibility with Barback 0.13.x.
 
 # v0.2.0 (2014-05-15)
 
