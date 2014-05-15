@@ -7,17 +7,28 @@ import 'package:barback/barback.dart';
 
 main(List<String> args) {
 
-  group('Parsing imports', () {
-    test('import supports single quotes', () {
+  group('imports', () {
+    test('single quotes', () {
       expect(Sass.resolveImportsFromSource("@import 'foo';"), equals(['foo']));
     });
 
-    test('import supports double quotes', () {
+    test('double quotes', () {
       expect(Sass.resolveImportsFromSource('@import "foo";'), equals(['foo']));
     });
 
     test('multiple imports', () {
       expect(Sass.resolveImportsFromSource("@import 'foo'; @import 'bar';"), equals(['foo', 'bar']));
+    });
+
+    group('urls', () {
+      test('url imports are ignored', () {
+        expect(Sass.resolveImportsFromSource("@import url('foo');"), equals([]));
+      });
+
+      test('imports containing word url are ok', () {
+        expect(Sass.resolveImportsFromSource("@import 'url_foo';"), equals(['url_foo']));
+      });
+
     });
   });
 
