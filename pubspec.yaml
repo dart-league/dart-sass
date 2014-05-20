@@ -6,6 +6,7 @@ author: Juha Komulainen <juha.komulainen@evident.fi>
 homepage: https://bitbucket.org/evidentsolutions/dart-sass
 dependencies:
   barback: ">=0.12.0 <0.14.0"
+  code_transformers: ">=0.1.3 <0.2.0"
   utf: ">=0.9.0 <0.9.1"
 dev_dependencies:
   unittest: ">=0.11.0 <0.12.0"
