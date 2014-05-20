@@ -3,34 +3,16 @@ library sass.transformer;
 import 'dart:async';
 import 'package:barback/barback.dart';
 import 'package:path/path.dart';
-import 'sass.dart';
+import 'package:sass/src/base_sass_transformer.dart';
+import 'package:sass/sass.dart';
 
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
-class SassTransformer extends Transformer implements DeclaringTransformer {
-  final BarbackSettings settings;
-  final TransformerOptions options;
-  final Sass _sass;
-
-  SassTransformer(BarbackSettings settings, this._sass) :
-    settings = settings,
-    options = new TransformerOptions.parse(settings.configuration);
+class SassTransformer extends BaseSassTransformer {
+  SassTransformer(BarbackSettings settings, Sass sass) :
+    super(settings, sass);
 
   SassTransformer.asPlugin(BarbackSettings settings) :
     this(settings, new Sass());
-
-  bool _isPrimaryPath(String path) {
-    if (posix.basename(path).startsWith('_'))
-      return false;
-
-    String extension = posix.extension(path);
-    return extension == '.sass' || extension == '.scss';
-  }
-
-  Future<bool> isPrimary(input) =>
-    // Hack to make the transformer compatible with Barback 0.13.x
-    new Future.value(_isPrimaryPath(input is Asset ? input.id.path : input.path));
-
-
 
   /// Reads all the imports of module so that Barback realizes that we depend on them.
   ///
@@ -59,56 +41,8 @@ class SassTransformer extends Transformer implements DeclaringTransformer {
     return imports.where((import) => !import.startsWith("compass"));
   }
 
-  Future apply(Transform transform) {
-    AssetId primaryAssetId = transform.primaryInput.id;
-
-    return _readImportsRecursively(transform, primaryAssetId).then((_) {
-      _sass.executable = options.executable;
-      _sass.style = options.style;
-      _sass.compass = options.compass;
-      _sass.lineNumbers = options.lineNumbers;
-
-      if (primaryAssetId.extension == '.scss') {
-        _sass.scss = true;
-      }
-
-      _sass.loadPath.add(posix.dirname(primaryAssetId.path));
-
-      return transform.primaryInput.readAsString().then((content) =>
-        _sass.transform(content).then((output) {
-          var newId = primaryAssetId.changeExtension('.css');
-          transform.addOutput(new Asset.fromString(newId, output));
-        }));
-    }).catchError((SassException e) {
-      transform.logger.error("error: ${e.message}");
-    }, test: (e) => e is SassException);
-  }
-
-  Future declareOutputs(DeclaringTransform transform) {
-    AssetId primaryAssetId = transform.primaryInput.id;
-    transform.declareOutput(primaryAssetId.changeExtension('.css'));
-
-    return new Future.value();
-  }
-}
-
-class TransformerOptions {
-  final String executable;
-  final String style;
-  final bool compass;
-  final bool lineNumbers;
-
-  TransformerOptions({String executable, String style, bool compass, bool lineNumbers}) :
-    executable = executable != null ? executable : "sass",
-    style = style,
-    compass = compass != null ? compass : false,
-    lineNumbers = lineNumbers != null ? lineNumbers : false;
-
-  factory TransformerOptions.parse(Map configuration) {
-    return new TransformerOptions(
-        executable: configuration["executable"],
-        style: configuration["style"],
-        compass: configuration["compass"],
-        lineNumbers: configuration["line-numbers"]);
+  @override
+  Future<String> processInput(Transform transform) {
+    return _readImportsRecursively(transform, transform.primaryInput.id);
   }
 }
