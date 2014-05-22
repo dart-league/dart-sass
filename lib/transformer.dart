@@ -85,7 +85,7 @@ class SassTransformer extends Transformer implements DeclaringTransformer {
   }
 
   Future declareOutputs(DeclaringTransform transform) {
-    AssetId primaryAssetId = transform.primaryInput.id;
+    AssetId primaryAssetId = transform.primaryId;
     transform.declareOutput(primaryAssetId.changeExtension('.css'));
 
     return new Future.value();
