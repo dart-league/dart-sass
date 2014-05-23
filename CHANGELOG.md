@@ -1,3 +1,8 @@
+# v0.2.2 (2014-05-23)
+
+- Require Barback 0.13.x.
+- Fixed `DeclaringTransformer` on Barback 0.13.x.  
+
 # v0.2.1 (2014-05-15)
 
 - Implemented `DeclaringTransformer` interface so Barback can optimize the asset graph.
