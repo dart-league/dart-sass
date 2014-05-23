@@ -15,14 +15,11 @@ main() {
     return new SassTransformer(settings, sass);
   }
 
-  Future<bool> isPrimary(String path) {
-    var asset = new Asset.fromString(new AssetId('my_package', path), 'my-contents');
-    return createTransformer().isPrimary(asset);
-  }
+  Future<bool> isPrimary(String path) =>
+    createTransformer().isPrimary(new AssetId('my_package', path));
 
-  Matcher assetPathContains(String string) {
-    return predicate((AssetId assetId) => assetId.path.contains(string), "Asset path contains '$string'");
-  }
+  Matcher assetPathContains(String string) =>
+    predicate((AssetId assetId) => assetId.path.contains(string), "Asset path contains '$string'");
 
   group('detecting primary assets', () {
     test('supported extensions should be recognized', () {
