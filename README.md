@@ -27,10 +27,11 @@ You can also pass options to Sass if necessary:
     :::yaml
     transformers:
       - sass:
-          executable: /path/to/sass
-          compass: true
-          line-numbers: true
-          style: compact
+          executable: /path/to/sass     # Sass executable to use
+          compass: true                 # Include compass
+          line-numbers: true            # Include line numbers in output
+          style: compact                # Style of generated CSS
+          copy-sources: true            # Copy original .scss/.sass files to output directory
 
 ## Using SassC
 

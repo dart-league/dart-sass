@@ -18,16 +18,15 @@ class SassTransformer extends Transformer implements DeclaringTransformer {
   SassTransformer.asPlugin(BarbackSettings settings) :
     this(settings, new Sass());
 
-  bool _isPrimaryPath(String path) {
-    if (posix.basename(path).startsWith('_'))
-      return false;
+  Future<bool> isPrimary(AssetId input) {
+    // We consider all .scss and .sass files primary although in reality we process only
+    // the ones that don't start with an underscore. This way we can call consumePrimary()
+    // for all files and they don't end up in the build-directory.
+    var extension = posix.extension(input.path);
+    var primary = extension == '.sass' || extension == '.scss';
 
-    String extension = posix.extension(path);
-    return extension == '.sass' || extension == '.scss';
+    return new Future.value(primary);
   }
-
-  Future<bool> isPrimary(AssetId input) =>
-    new Future.value(_isPrimaryPath(input.path));
 
   /// Reads all the imports of module so that Barback realizes that we depend on them.
   ///
@@ -58,6 +57,12 @@ class SassTransformer extends Transformer implements DeclaringTransformer {
 
   Future apply(Transform transform) {
     AssetId primaryAssetId = transform.primaryInput.id;
+
+    if (!options.copySources)
+      transform.consumePrimary();
+
+    if (posix.basename(primaryAssetId.path).startsWith('_'))
+        return new Future.value();
 
     return _readImportsRecursively(transform, primaryAssetId).then((_) {
       _sass.executable = options.executable;
@@ -94,18 +99,21 @@ class TransformerOptions {
   final String style;
   final bool compass;
   final bool lineNumbers;
+  final bool copySources;
 
-  TransformerOptions({String executable, String style, bool compass, bool lineNumbers}) :
+  TransformerOptions({String executable, String style, bool compass, bool lineNumbers, bool copySources}) :
     executable = executable != null ? executable : "sass",
     style = style,
     compass = compass != null ? compass : false,
-    lineNumbers = lineNumbers != null ? lineNumbers : false;
+    lineNumbers = lineNumbers != null ? lineNumbers : false,
+    copySources = copySources != null ? copySources : false;
 
   factory TransformerOptions.parse(Map configuration) {
     return new TransformerOptions(
         executable: configuration["executable"],
         style: configuration["style"],
         compass: configuration["compass"],
-        lineNumbers: configuration["line-numbers"]);
+        lineNumbers: configuration["line-numbers"],
+        copySources: configuration["copy-sources"]);
   }
 }

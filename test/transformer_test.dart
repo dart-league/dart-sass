@@ -32,9 +32,9 @@ main() {
       expect(isPrimary('foo.bar'), completion(isFalse));
     });
 
-    test('files with leading underscore should not be primary assets', () {
-      expect(isPrimary('_foo.scss'), completion(isFalse));
-      expect(isPrimary('foo/_foo.scss'), completion(isFalse));
+    test('files with leading underscore should also be primary assets', () {
+      expect(isPrimary('_foo.scss'), completion(isTrue));
+      expect(isPrimary('foo/_foo.scss'), completion(isTrue));
     });
   });
 
