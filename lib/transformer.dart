@@ -45,11 +45,53 @@ class SassTransformer extends Transformer implements DeclaringTransformer {
       }
 
       return Future.wait(imports.map((module) {
-        var name = module.contains('.') ? module : "_$module${assetId.extension}";
-        var path = posix.join(posix.dirname(assetId.path), name);
-        return _readImportsRecursively(transform, new AssetId(assetId.package, path));
+        var assetIds = _candidateAssetIds(assetId, module);
+
+        return _firstExisting(transform, assetIds).then((id) {
+          if (id != null)
+            return _readImportsRecursively(transform, id);
+          else
+            return new Future.error(new SassException("could not resolve import '$module' (tried $assetIds)"));
+        });
       }));
     });
+
+  /// Returns the first existing assetId from assetIds, or null if none is found.
+  Future<AssetId> _firstExisting(Transform transform, List<AssetId> assetIds) {
+    loop(int index) {
+      if (index >= assetIds.length)
+        return new Future.value(null);
+
+      var assetId = assetIds[index];
+      return transform.hasInput(assetId).then((exists) {
+        if (exists)
+          return new Future.value(assetId);
+        else
+          return loop(index+1);
+      });
+    }
+
+    return loop(0);
+  }
+
+  List<String> _candidateAssetIds(AssetId assetId, String module) {
+    var names = [];
+
+    var dirname = posix.dirname(module);
+    var basename = posix.basename(module);
+
+    if (basename.contains('.')) {
+      names.add(basename);
+      names.add("_$basename");
+    } else {
+      names.add("$basename.scss");
+      names.add("$basename.sass");
+      names.add("_$basename.scss");
+      names.add("_$basename.sass");
+    }
+
+    return names.map((n) => new AssetId(assetId.package, posix.join(posix.dirname(assetId.path), dirname, n))).toList();
+  }
 
   Iterable<String> _excludeCompassImports(Iterable<String> imports) {
     return imports.where((import) => !import.startsWith("compass"));
