@@ -1,7 +1,8 @@
-# vX.Y.Z (yyyy-mm-dd)
+# v0.3.0 (2014-05-25)
 
 - **Breaking change:** don't copy source .scss/.sass files to build directory by default.
-  Use `copy-sources: true` to keep the old behavior.
+  Use `copy-sources: true` to keep the old behavior. ([#7](https://bitbucket.org/evidentsolutions/dart-sass/issue/7/option-to-not-copy-the-scss-source-to))
+- Support imports with directory names. ([#8](https://bitbucket.org/evidentsolutions/dart-sass/issue/8/build-fails-when-import-references-a-file]))
 
 # v0.2.2 (2014-05-23)
 
