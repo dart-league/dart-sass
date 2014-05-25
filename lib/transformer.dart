@@ -61,7 +61,7 @@ class SassTransformer extends Transformer implements DeclaringTransformer {
     if (!options.copySources)
       transform.consumePrimary();
 
-    if (posix.basename(primaryAssetId.path).startsWith('_'))
+    if (_isPartial(primaryAssetId))
         return new Future.value();
 
     return _readImportsRecursively(transform, primaryAssetId).then((_) {
@@ -88,10 +88,17 @@ class SassTransformer extends Transformer implements DeclaringTransformer {
 
   Future declareOutputs(DeclaringTransform transform) {
     AssetId primaryAssetId = transform.primaryId;
+    if (_isPartial(primaryAssetId))
+      return new Future.value();
+
     transform.declareOutput(primaryAssetId.changeExtension('.css'));
 
     return new Future.value();
   }
+
+  bool _isPartial(AssetId asset) =>
+    posix.basename(asset.path).startsWith('_');
+
 }
 
 class TransformerOptions {
