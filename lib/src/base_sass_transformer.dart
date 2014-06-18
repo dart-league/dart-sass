@@ -14,28 +14,34 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     settings = settings,
     options = new TransformerOptions.parse(settings.configuration);
 
-  bool _isPrimaryPath(String path) {
-    if (posix.basename(path).startsWith('_'))
-      return false;
+  Future<bool> isPrimary(AssetId input) {
+    // We consider all .scss and .sass files primary although in reality we process only
+    // the ones that don't start with an underscore. This way we can call consumePrimary()
+    // for all files and they don't end up in the build-directory.
+    var extension = posix.extension(input.path);
+    var primary = extension == '.sass' || extension == '.scss';
 
-    String extension = posix.extension(path);
-    return extension == '.sass' || extension == '.scss';
+    return new Future.value(primary);
   }
 
-  Future<bool> isPrimary(input) =>
-    // Hack to make the transformer compatible with Barback 0.13.x
-    new Future.value(_isPrimaryPath(input is Asset ? input.id.path : input.path));
-
   Future declareOutputs(DeclaringTransform transform) {
-    AssetId primaryAssetId = transform.primaryInput.id;
+    AssetId primaryAssetId = transform.primaryId;
+    if (_isPartial(primaryAssetId))
+      return new Future.value();
+
     transform.declareOutput(primaryAssetId.changeExtension('.css'));
 
     return new Future.value();
   }
 
   Future apply(Transform transform) {
-    // Don't include the SASS file in the build.
-    transform.consumePrimary();
+    AssetId primaryAssetId = transform.primaryInput.id;
+
+    if (!options.copySources)
+      transform.consumePrimary();
+
+    if (_isPartial(primaryAssetId))
+      return new Future.value();
 
     return processInput(transform).then((content) {
       _sass.executable = options.executable;
@@ -43,9 +49,11 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
       _sass.compass = options.compass;
       _sass.lineNumbers = options.lineNumbers;
 
-      if (transform.primaryInput.id.extension == '.scss') {
+      if (primaryAssetId.extension == '.scss') {
         _sass.scss = true;
       }
+
+      _sass.loadPath.add(posix.dirname(primaryAssetId.path));
 
       return _sass.transform(content).then((output) {
         var newId = transform.primaryInput.id.changeExtension('.css');
@@ -54,7 +62,66 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     });
   }
 
+  bool _isPartial(AssetId asset) =>
+    posix.basename(asset.path).startsWith('_');
+
   Future<String> processInput(Transform transform);
+
+  Iterable<String> filterImports(Iterable<String> imports) {
+    if (options.compass) {
+      return imports.where((import) => !import.startsWith("compass"));
+    } else {
+      return imports;
+    }
+  }
+
+  Future<AssetId> resolveImportAssetId(Transform transform, AssetId assetId, String module) {
+    var assetIds = _candidateAssetIds(assetId, module);
+
+    return _firstExisting(transform, assetIds).then((id) {
+      if (id != null)
+        return id;
+      else
+        return new Future.error(new SassException("could not resolve import '$module' (tried $assetIds)"));
+    });
+  }
+
+  /// Returns the first existing assetId from assetIds, or null if none is found.
+  Future<AssetId> _firstExisting(Transform transform, List<AssetId> assetIds) {
+    loop(int index) {
+      if (index >= assetIds.length)
+        return new Future.value(null);
+
+      var assetId = assetIds[index];
+      return transform.hasInput(assetId).then((exists) {
+        if (exists)
+          return new Future.value(assetId);
+        else
+          return loop(index+1);
+      });
+    }
+
+    return loop(0);
+  }
+
+  List<String> _candidateAssetIds(AssetId assetId, String module) {
+    var names = [];
+
+    var dirname = posix.dirname(module);
+    var basename = posix.basename(module);
+
+    if (basename.contains('.')) {
+      names.add(basename);
+      names.add("_$basename");
+    } else {
+      names.add("$basename.scss");
+      names.add("$basename.sass");
+      names.add("_$basename.scss");
+      names.add("_$basename.sass");
+    }
+
+    return names.map((n) => new AssetId(assetId.package, posix.join(posix.dirname(assetId.path), dirname, n))).toList();
+  }
 }
 
 class TransformerOptions {
@@ -62,18 +129,21 @@ class TransformerOptions {
   final String style;
   final bool compass;
   final bool lineNumbers;
+  final bool copySources;
 
-  TransformerOptions({String executable, String style, bool compass, bool lineNumbers}) :
-    executable = executable != null ? executable : "sass",
-    style = style,
-    compass = compass != null ? compass : false,
-    lineNumbers = lineNumbers != null ? lineNumbers : false;
+  TransformerOptions({String this.executable, String this.style, bool this.compass, bool this.lineNumbers, bool this.copySources});
 
   factory TransformerOptions.parse(Map configuration) {
+    config(key, defaultValue) {
+      var value = configuration[key];
+      return value != null ? value : defaultValue;
+    }
+
     return new TransformerOptions(
-        executable: configuration["executable"],
-        style: configuration["style"],
-        compass: configuration["compass"],
-        lineNumbers: configuration["line-numbers"]);
+        executable: config("executable", "sass"),
+        style: config("style", null),
+        compass: config("compass", false),
+        lineNumbers: config("line-numbers", false),
+        copySources: config("copy-sources", false));
   }
 }
