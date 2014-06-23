@@ -159,7 +159,7 @@ class TransformerOptions {
     }
 
     return new TransformerOptions(
-        executable: config("executable", "sass"),
+        executable: config("executable", Sass.defaultExecutable),
         style: config("style", null),
         compass: config("compass", false),
         lineNumbers: config("line-numbers", false),
