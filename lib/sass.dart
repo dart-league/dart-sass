@@ -13,7 +13,6 @@ class Sass {
   List<String> loadPath = [];
   bool lineNumbers = false;
   bool compass = false;
-  static final RegExp _importRegex = new RegExp(r"""@import\s+(('.+?')|(".+?"))\s*;""");
 
   /// Transforms given Sass-source to CSS.
   Future<String> transform(String content) {
@@ -76,13 +75,6 @@ class Sass {
 
     return flags;
   }
-
-  /// Returns the imports defined in given source, excluding url imports.
-  static List<String> resolveImportsFromSource(String source) =>
-    _importRegex.allMatches(source).map((Match m) {
-      var str = m.group(1);
-      return str.substring(1, str.length-1);
-    }).toList();
 }
 
 /// Exception thrown when there's a problem transforming Sass.
