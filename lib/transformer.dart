@@ -2,9 +2,9 @@ library sass.transformer;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
-import 'package:path/path.dart';
 import 'package:sass/src/base_sass_transformer.dart';
 import 'package:sass/sass.dart';
+import 'package:sass/src/sass_file.dart';
 
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
 class SassTransformer extends BaseSassTransformer implements DeclaringTransformer {
@@ -30,10 +30,11 @@ class SassTransformer extends BaseSassTransformer implements DeclaringTransforme
   /// really important with "pub serve".
   Future _readImportsRecursively(Transform transform, AssetId assetId) =>
     transform.readInputAsString(assetId).then((source) {
-      var imports = filterImports(Sass.resolveImportsFromSource(source));
+      var sassFile = new SassFile(source);
+      var imports = filterImports(sassFile.imports);
 
-      return Future.wait(imports.map((module) =>
-        _resolveImportAssetId(transform, assetId, module).then((importId) =>
+      return Future.wait(imports.map((import) =>
+        resolveImportAssetId(transform, assetId, import).then((importId) =>
           _readImportsRecursively(transform, importId))
       )).then((_) => source);
     });
