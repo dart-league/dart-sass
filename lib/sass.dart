@@ -7,12 +7,14 @@ import 'package:utf/utf.dart';
 /// Facade for Sass-transformations.
 class Sass {
 
-  String executable = "sass";
+  String executable = defaultExecutable;
   bool scss = false;
   String style = null; // nested, compact, compressed, expanded
   List<String> loadPath = [];
   bool lineNumbers = false;
   bool compass = false;
+
+  static get defaultExecutable => (Platform.operatingSystem == "windows" ? "sass.bat" : "sass") ;
 
   /// Transforms given Sass-source to CSS.
   Future<String> transform(String content) {
