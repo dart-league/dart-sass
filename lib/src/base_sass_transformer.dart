@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:barback/barback.dart';
 import 'package:sass/sass.dart';
 import 'package:path/path.dart';
+import 'package:sass/src/sass_file.dart';
 
 abstract class BaseSassTransformer extends Transformer implements DeclaringTransformer {
   final BarbackSettings settings;
@@ -62,27 +63,26 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     });
   }
 
-  bool _isPartial(AssetId asset) =>
-    posix.basename(asset.path).startsWith('_');
+  bool _isPartial(AssetId asset) => posix.basename(asset.path).startsWith('_');
 
   Future<String> processInput(Transform transform);
 
-  Iterable<String> filterImports(Iterable<String> imports) {
+  Iterable<Import> filterImports(Iterable<Import> imports) {
     if (options.compass) {
-      return imports.where((import) => !import.startsWith("compass"));
+      return imports.where((import) => !import.path.startsWith("compass"));
     } else {
       return imports;
     }
   }
 
-  Future<AssetId> resolveImportAssetId(Transform transform, AssetId assetId, String module) {
-    var assetIds = _candidateAssetIds(assetId, module);
+  Future<AssetId> resolveImportAssetId(Transform transform, AssetId assetId, Import import) {
+    var assetIds = _candidateAssetIds(assetId, import);
 
     return _firstExisting(transform, assetIds).then((id) {
       if (id != null)
         return id;
       else
-        return new Future.error(new SassException("could not resolve import '$module' (tried $assetIds)"));
+        return new Future.error(new SassException("could not resolve import '$import' (tried $assetIds)"));
     });
   }
 
@@ -104,11 +104,11 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     return loop(0);
   }
 
-  List<String> _candidateAssetIds(AssetId assetId, String module) {
+  List<AssetId> _candidateAssetIds(AssetId assetId, Import import) {
     var names = [];
 
-    var dirname = posix.dirname(module);
-    var basename = posix.basename(module);
+    var dirname = posix.dirname(import.path);
+    var basename = posix.basename(import.path);
 
     if (basename.contains('.')) {
       names.add(basename);
@@ -140,7 +140,7 @@ class TransformerOptions {
     }
 
     return new TransformerOptions(
-        executable: config("executable", "sass"),
+        executable: config("executable", Sass.defaultExecutable),
         style: config("style", null),
         compass: config("compass", false),
         lineNumbers: config("line-numbers", false),

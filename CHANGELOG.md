@@ -1,3 +1,7 @@
+# v0.3.1 (2014-06-24)
+
+- Use `sass.bat` as default executable on Windows. ([#10](https://bitbucket.org/evidentsolutions/dart-sass/issue/10/add-windows-default-executable-support)) (Thanks to Nicholas Tuck.)
+
 # v0.3.0 (2014-05-25)
 
 - **Breaking change:** don't copy source .scss/.sass files to build directory by default.

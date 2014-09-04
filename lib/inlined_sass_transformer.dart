@@ -24,11 +24,11 @@ class InlinedSassTransformer extends BaseSassTransformer {
     return transform.readInputAsString(sassAsset).then((contents) {
       var sassFile = new SassFile(contents);
       var filteredImports = filterImports(sassFile.imports);
-      var importedAssets = filteredImports.map((import) =>
-        resolveImportAssetId(transform, sassAsset, import.path)
-      );
+      var importedAssets = filteredImports.map((import) => resolveImportAssetId(transform, sassAsset, import));
+      var inlinedImports = importedAssets.map((Future asset) => asset.then((id) => _inlineSassImports(id, transform)));
 
-      return Future.wait(importedAssets.map((asset) => _inlineSassImports(asset, transform)))
+      return Future
+          .wait(inlinedImports)
           .then((sassFiles) {
             var imports = new Map.fromIterables(filteredImports, sassFiles);
             return new InlinedSassFile(contents, imports);
