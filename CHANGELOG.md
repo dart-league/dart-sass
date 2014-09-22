@@ -1,3 +1,7 @@
+# v0.3.2 (2014-09-17)
+
+- Support Barback 0.15.x. 
+
 # v0.3.1 (2014-06-24)
 
 - Use `sass.bat` as default executable on Windows. ([#10](https://bitbucket.org/evidentsolutions/dart-sass/issue/10/add-windows-default-executable-support)) (Thanks to Nicholas Tuck.)
