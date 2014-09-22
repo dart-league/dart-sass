@@ -15,24 +15,22 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     settings = settings,
     options = new TransformerOptions.parse(settings.configuration);
 
-  Future<bool> isPrimary(AssetId input) {
+  bool isPrimary(AssetId input) {
     // We consider all .scss and .sass files primary although in reality we process only
     // the ones that don't start with an underscore. This way we can call consumePrimary()
     // for all files and they don't end up in the build-directory.
     var extension = posix.extension(input.path);
     var primary = extension == '.sass' || extension == '.scss';
 
-    return new Future.value(primary);
+    return primary;
   }
 
-  Future declareOutputs(DeclaringTransform transform) {
+  declareOutputs(DeclaringTransform transform) {
     AssetId primaryAssetId = transform.primaryId;
     if (_isPartial(primaryAssetId))
-      return new Future.value();
+      return;
 
     transform.declareOutput(primaryAssetId.changeExtension('.css'));
-
-    return new Future.value();
   }
 
   Future apply(Transform transform) {

@@ -15,7 +15,7 @@ main() {
     return new SassTransformer(settings, sass);
   }
 
-  Future<bool> isPrimary(String path) =>
+  bool isPrimary(String path) =>
     createTransformer().isPrimary(new AssetId('my_package', path));
 
   Matcher assetPathContains(String string) =>
@@ -23,18 +23,18 @@ main() {
 
   group('detecting primary assets', () {
     test('supported extensions should be recognized', () {
-      expect(isPrimary('foo.sass'), completion(isTrue));
-      expect(isPrimary('foo.scss'), completion(isTrue));
-      expect(isPrimary('foo/foo.scss'), completion(isTrue));
+      expect(isPrimary('foo.sass'), isTrue);
+      expect(isPrimary('foo.scss'), isTrue);
+      expect(isPrimary('foo/foo.scss'), isTrue);
     });
 
     test('unsupported extensions should not be primary assets', () {
-      expect(isPrimary('foo.bar'), completion(isFalse));
+      expect(isPrimary('foo.bar'), isFalse);
     });
 
     test('files with leading underscore should also be primary assets', () {
-      expect(isPrimary('_foo.scss'), completion(isTrue));
-      expect(isPrimary('foo/_foo.scss'), completion(isTrue));
+      expect(isPrimary('_foo.scss'), isTrue);
+      expect(isPrimary('foo/_foo.scss'), isTrue);
     });
   });
 
