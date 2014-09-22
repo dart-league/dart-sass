@@ -1,3 +1,8 @@
+# v0.4.0 (2014-09-22)
+
+- Support for new `inlined_sass_transformer`. ([#4](https://bitbucket.org/evidentsolutions/dart-sass/issue/4/support-transformations-to-imported-sass)) (Thanks to Dan Schultz.) 
+- Require Barback 0.15.x.
+
 # v0.3.2 (2014-09-17)
 
 - Support Barback 0.15.x. 
