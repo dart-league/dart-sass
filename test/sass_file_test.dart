@@ -1,7 +1,7 @@
 library sass.sass_file_test;
 
 import 'package:unittest/unittest.dart';
-import 'package:sass/src/sass_file.dart';
+import 'package:sass/transformer.dart';
 
 void main() => group("SassFile", () {
   group("imports", () {

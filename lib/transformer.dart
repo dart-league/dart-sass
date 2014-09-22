@@ -2,9 +2,13 @@ library sass.transformer;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
-import 'package:sass/src/base_sass_transformer.dart';
 import 'package:sass/sass.dart';
-import 'package:sass/src/sass_file.dart';
+import 'package:path/path.dart';
+
+part 'src/base_sass_transformer.dart';
+part 'src/inlined_sass_file.dart';
+part 'src/sass_file.dart';
+part 'src/transformer_options.dart';
 
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
 class SassTransformer extends BaseSassTransformer implements DeclaringTransformer {

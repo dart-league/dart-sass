@@ -2,10 +2,8 @@ library sass.inlined_sass_transformer;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
-import 'package:sass/src/sass_file.dart';
-import 'package:sass/src/inlined_sass_file.dart';
 import 'package:sass/sass.dart';
-import 'package:sass/src/base_sass_transformer.dart';
+import 'package:sass/transformer.dart';
 
 class InlinedSassTransformer extends BaseSassTransformer {
   InlinedSassTransformer(BarbackSettings settings, Sass sass) :

@@ -1,10 +1,4 @@
-library sass.base_sass_transformer;
-
-import 'dart:async';
-import 'package:barback/barback.dart';
-import 'package:sass/sass.dart';
-import 'package:path/path.dart';
-import 'package:sass/src/sass_file.dart';
+part of sass.transformer;
 
 abstract class BaseSassTransformer extends Transformer implements DeclaringTransformer {
   final BarbackSettings settings;
@@ -65,7 +59,7 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
 
   Future<String> processInput(Transform transform);
 
-  Iterable<Import> filterImports(Iterable<Import> imports) {
+  Iterable<_SassImport> filterImports(Iterable<_SassImport> imports) {
     if (options.compass) {
       return imports.where((import) => !import.path.startsWith("compass"));
     } else {
@@ -73,7 +67,7 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     }
   }
 
-  Future<AssetId> resolveImportAssetId(Transform transform, AssetId assetId, Import import) {
+  Future<AssetId> resolveImportAssetId(Transform transform, AssetId assetId, _SassImport import) {
     var assetIds = _candidateAssetIds(assetId, import);
 
     return _firstExisting(transform, assetIds).then((id) {
@@ -102,7 +96,7 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     return loop(0);
   }
 
-  List<AssetId> _candidateAssetIds(AssetId assetId, Import import) {
+  List<AssetId> _candidateAssetIds(AssetId assetId, _SassImport import) {
     var names = [];
 
     var dirname = posix.dirname(import.path);
@@ -119,29 +113,5 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     }
 
     return names.map((n) => new AssetId(assetId.package, posix.join(posix.dirname(assetId.path), dirname, n))).toList();
-  }
-}
-
-class TransformerOptions {
-  final String executable;
-  final String style;
-  final bool compass;
-  final bool lineNumbers;
-  final bool copySources;
-
-  TransformerOptions({String this.executable, String this.style, bool this.compass, bool this.lineNumbers, bool this.copySources});
-
-  factory TransformerOptions.parse(Map configuration) {
-    config(key, defaultValue) {
-      var value = configuration[key];
-      return value != null ? value : defaultValue;
-    }
-
-    return new TransformerOptions(
-        executable: config("executable", Sass.defaultExecutable),
-        style: config("style", null),
-        compass: config("compass", false),
-        lineNumbers: config("line-numbers", false),
-        copySources: config("copy-sources", false));
   }
 }
