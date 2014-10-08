@@ -21,7 +21,8 @@ class SassTransformer extends BaseSassTransformer implements DeclaringTransforme
 
   @override
   Future<String> processInput(Transform transform) {
-    return _readImportsRecursively(transform, transform.primaryInput.id);
+    AssetId id = transform.primaryInput.id;
+    return _readImportsRecursively(transform, id, id.package);
   }
 
   /// Reads all the imports of module so that Barback realizes that we depend on them.
@@ -32,14 +33,14 @@ class SassTransformer extends BaseSassTransformer implements DeclaringTransforme
   /// Barback knows that if bar.scss changes, it will need to recompile foo.scss.
   /// This doesn't matter when executing a batch build with "pub build", but it's
   /// really important with "pub serve".
-  Future _readImportsRecursively(Transform transform, AssetId assetId) =>
+  Future _readImportsRecursively(Transform transform, AssetId assetId, String primaryPackage) =>
     transform.readInputAsString(assetId).then((source) {
       var sassFile = new SassFile(source);
-      var imports = filterImports(sassFile.imports);
+      var imports = filterImports(primaryPackage, sassFile.imports);
 
       return Future.wait(imports.map((import) =>
         resolveImportAssetId(transform, assetId, import).then((importId) =>
-          _readImportsRecursively(transform, importId))
+          _readImportsRecursively(transform, importId, primaryPackage))
       )).then((_) => source);
     });
 }
