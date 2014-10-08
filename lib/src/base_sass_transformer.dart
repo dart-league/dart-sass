@@ -112,6 +112,29 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
       names.add("_$basename.sass");
     }
 
-    return names.map((n) => new AssetId(assetId.package, posix.join(posix.dirname(assetId.path), dirname, n))).toList();
+    // If the imported file is from some pub package then we should search it's source file using its package.
+    // Let's assume that we'd like to use some scss partials from my_sass package installed as dependency into
+    // them my_app package.
+    // and in some web/style.scss we have some `@import "packages/my_sass/partial"`;
+    // So instead of `AssetId('my_app', 'web/packages/my_sass/_partial.scss')` we should use
+    // `AssetId('my_sass', 'lib/_partial.scss')`
+    // But for the local partials in web/_partial.scss we should use `AssetId('my_app', 'web/_partial.scss')`
+    //
+    // Another example. If we have some local partial in web/sass/_partial.scss, that want to use some pub
+    // packaged partial, it could have something like this `@import "../packages/my_sass/partial";`, so
+    // we need to skip all parts before 'packages' and use rest part to make same `AssetId('my_app', 'lib/_partial.scss')`
+    // as in the first case.
+    var package = assetId.package;
+    var assetDir = posix.dirname(assetId.path);
+    if (dirname.contains('packages')) {
+      var paths = posix.split(dirname);
+      paths = paths.sublist(paths.indexOf('packages'))..removeAt(0);
+      package = paths[0];
+      paths[0] = 'lib';
+      dirname = posix.joinAll(paths);
+      assetDir = '';
+    }
+
+    return names.map((n) => new AssetId(package, posix.join(assetDir, dirname, n))).toList();
   }
 }
