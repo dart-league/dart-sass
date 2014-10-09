@@ -19,6 +19,17 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     return primary;
   }
 
+  bool _isFromPackages(String filePath) => filePath.contains('packages');
+
+  List<String> _splitPackagePath(String filePath) {
+    var paths = posix.split(filePath);
+    paths = paths.sublist(paths.indexOf('packages'))..removeAt(0);
+    return paths;
+  }
+
+  bool _isExternalPackageAsset(String package, AssetId asset) =>
+    _isFromPackages(asset.path) && (package != _splitPackagePath(asset.path).first);
+
   declareOutputs(DeclaringTransform transform) {
     AssetId primaryAssetId = transform.primaryId;
     if (_isPartial(primaryAssetId))
@@ -59,11 +70,11 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
 
   Future<String> processInput(Transform transform);
 
-  Iterable<_SassImport> filterImports(Iterable<_SassImport> imports) {
+  Iterable<_SassImport> filterImports(String package, Iterable<_SassImport> imports) {
     if (options.compass) {
-      return imports.where((import) => !import.path.startsWith("compass"));
+      return imports.where((import) => !import.path.startsWith("compass") && !_isExternalPackageAsset(package, import));
     } else {
-      return imports;
+      return imports.where((import) => !_isExternalPackageAsset(package, import));
     }
   }
 
@@ -112,6 +123,25 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
       names.add("_$basename.sass");
     }
 
-    return names.map((n) => new AssetId(assetId.package, posix.join(posix.dirname(assetId.path), dirname, n))).toList();
+    // If the imported file is from this package lib (for test purposes or something) we should search it's source file using lib path.
+    // So instead of `AssetId('my_sass', 'test/packages/my_sass/_partial.scss')` we should use
+    // `AssetId('my_sass', 'lib/_partial.scss')`
+    // But for the local partials in test/_partial.scss we should use `AssetId('my_app', 'test/_partial.scss')`
+    //
+    // Another example. If we have some local partial in test/sass/_partial.scss, that want to use some pub
+    // packaged partial, it could have something like this `@import "../packages/my_sass/partial";`, so
+    // we need to skip all parts before 'packages' and use rest part to make same `AssetId('my_sass', 'lib/_partial.scss')`
+    // as in the first case.
+    var package = assetId.package;
+    var assetDir = posix.dirname(assetId.path);
+    if (_isFromPackages(dirname)) {
+      var paths = _splitPackagePath(dirname);
+      package = paths[0];
+      paths[0] = 'lib';
+      dirname = posix.joinAll(paths);
+      assetDir = '';
+    }
+
+    return names.map((n) => new AssetId(package, posix.join(assetDir, dirname, n))).toList();
   }
 }
