@@ -1,4 +1,4 @@
-# v0.4.1 (not yet released)
+# v0.4.1 (2014-10-09)
 
 - Filter out external packages when resolving imports. ([#12](https://bitbucket.org/evidentsolutions/dart-sass/issue/12/problem-when-trying-to-create-a-library-of)) (Thanks to Konstantin Borisov.)
 
