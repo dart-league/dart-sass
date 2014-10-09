@@ -14,16 +14,17 @@ class InlinedSassTransformer extends BaseSassTransformer {
 
   @override
   Future<String> processInput(Transform transform) {
-    return _inlineSassImports(transform.primaryInput.id, transform)
+    AssetId id = transform.primaryInput.id;
+    return _inlineSassImports(id, transform, id.package)
         .then((sassFile) => sassFile.contents);
   }
 
-  Future<InlinedSassFile> _inlineSassImports(AssetId sassAsset, Transform transform) {
+  Future<InlinedSassFile> _inlineSassImports(AssetId sassAsset, Transform transform, String primaryPackage) {
     return transform.readInputAsString(sassAsset).then((contents) {
       var sassFile = new SassFile(contents);
-      var filteredImports = filterImports(sassFile.imports);
+      var filteredImports = filterImports(primaryPackage, sassFile.imports);
       var importedAssets = filteredImports.map((import) => resolveImportAssetId(transform, sassAsset, import));
-      var inlinedImports = importedAssets.map((Future asset) => asset.then((id) => _inlineSassImports(id, transform)));
+      var inlinedImports = importedAssets.map((Future asset) => asset.then((id) => _inlineSassImports(id, transform, primaryPackage)));
 
       return Future
           .wait(inlinedImports)

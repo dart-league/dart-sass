@@ -27,7 +27,7 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
     return paths;
   }
 
-  bool _isExternalPackageAsset(String package, AssetId asset) =>
+  bool _isExternalPackageAsset(String package, _SassImport asset) =>
     _isFromPackages(asset.path) && (package != _splitPackagePath(asset.path).first);
 
   declareOutputs(DeclaringTransform transform) {
