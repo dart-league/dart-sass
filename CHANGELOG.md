@@ -1,3 +1,7 @@
+# v0.4.1 (not yet released)
+
+- Filter out external packages when resolving imports. ([#12](https://bitbucket.org/evidentsolutions/dart-sass/issue/12/problem-when-trying-to-create-a-library-of)) (Thanks to Konstantin Borisov.)
+
 # v0.4.0 (2014-09-22)
 
 - Support for new `inlined_sass_transformer`. ([#4](https://bitbucket.org/evidentsolutions/dart-sass/issue/4/support-transformations-to-imported-sass)) (Thanks to Dan Schultz.) 
