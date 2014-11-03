@@ -1,5 +1,6 @@
 # v0.4.2 (2014-11-03)
 
+- Fixed files over 1024 bytes getting truncated on Windows. ([#19](https://bitbucket.org/evidentsolutions/dart-sass/issue/19/sass-transformer-produces-zero-length)) (Thanks to Alexander Sergeev.)
 - Normalize the load paths to platform's native format. (Thanks to llamadonica.)
 
 # v0.4.1 (2014-10-09)

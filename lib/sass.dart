@@ -26,6 +26,12 @@ class Sass {
       StringBuffer output = new StringBuffer();
 
       process.stdin.write(content);
+
+      // These writeln -calls are needed or the transformer will produce empty output on Windows.
+      // See https://bitbucket.org/evidentsolutions/dart-sass/issue/19/sass-transformer-produces-zero-length
+      process.stdin.writeln();
+      process.stdin.writeln();
+
       process.stdin.close();
       process.stdout.transform(new Utf8DecoderTransformer()).listen((str) => output.write(str));
       process.stderr.transform(new Utf8DecoderTransformer()).listen((str) => errors.write(str));
