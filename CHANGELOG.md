@@ -1,3 +1,7 @@
+# v0.4.2 (2014-11-03)
+
+- Normalize the load paths to platform's native format. (Thanks to llamadonica.)
+
 # v0.4.1 (2014-10-09)
 
 - Filter out external packages when resolving imports. ([#12](https://bitbucket.org/evidentsolutions/dart-sass/issue/12/problem-when-trying-to-create-a-library-of)) (Thanks to Konstantin Borisov.)

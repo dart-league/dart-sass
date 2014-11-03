@@ -3,7 +3,7 @@ library sass;
 import 'dart:async';
 import 'dart:io';
 import 'package:utf/utf.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 
 /// Facade for Sass-transformations.
 class Sass {
@@ -73,9 +73,9 @@ class Sass {
       flags..add('-t')..add(style);
 
     loadPath.forEach((dir) {
-      var fileSystem = (Platform.operatingSystem == "windows")?windows:posix;
-      dir = fileSystem.joinAll(posix.split(dir));
-      flags..add('-I')..add(dir);
+      // Normalize the load paths to platform's native format
+      var normalized = path.joinAll(path.posix.split(dir));
+      flags..add('-I')..add(normalized);
     });
 
     return flags;
