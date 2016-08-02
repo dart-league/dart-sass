@@ -1,7 +1,7 @@
+@TestOn('vm')
 library sass.transformer.test;
 
-import 'dart:async';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:mock/mock.dart';
 import 'package:sass/transformer.dart';
 import 'package:barback/barback.dart';
