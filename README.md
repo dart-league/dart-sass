@@ -9,11 +9,12 @@
 
 Simply add the following lines to your `pubspec.yaml`:
 
-    :::yaml
-    dependencies:
-      sass: any
-    transformers:
-      - sass
+```yaml
+dependencies:
+  sass: any
+transformers:
+  - sass
+```
 
 After adding the transformer your `.sass` and `.scss` files will be automatically transformed to
 corresponding `.css` files.
@@ -24,24 +25,26 @@ You need to have [Sass](http://sass-lang.com/) installed and available on the pa
 
 You can also pass options to Sass if necessary:
 
-    :::yaml
-    transformers:
-      - sass:
-          executable: /path/to/sass     # Sass executable to use
-          compass: true                 # Include compass
-          line-numbers: true            # Include line numbers in output
-          style: compact                # Style of generated CSS
-          copy-sources: true            # Copy original .scss/.sass files to output directory
+```yaml
+transformers:
+  - sass:
+      executable: /path/to/sass     # Sass executable to use
+      compass: true                 # Include compass
+      line-numbers: true            # Include line numbers in output
+      style: compact                # Style of generated CSS
+      copy-sources: true            # Copy original .scss/.sass files to output directory
+```
 
 ## Using SassC
 
 You can use [SassC](https://github.com/hcatlin/sassc) instead of normal Sass by specifying executable
 as 'sassc' (or any path ending with 'sassc'):
 
-    :::yaml
-    transformers:
-      - sass:
-          executable: sassc  # or /path/to/sassc
+```yaml
+transformers:
+  - sass:
+      executable: sassc  # or /path/to/sassc
+```
 
 SassC only supports `.scss`-files and does not support Compass.
 
@@ -60,10 +63,11 @@ for details.)
 
 To enable the use of inlined transformer, use `sass/inlined_sass_transformer` as your transformer:
 
-    ::yaml
-    transformers:
-      - sass/inlined_sass_transformer
-          <possible configuration settings>
+```yaml
+transformers:
+  - sass/inlined_sass_transformer
+      <possible configuration settings>
+```
 
 ## Current limitations
 
