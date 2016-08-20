@@ -1,80 +1,41 @@
 @TestOn('vm')
 library sass.transformer.test;
 
+import 'dart:async';
+import 'dart:io';
 import 'package:test/test.dart';
-import 'package:mock/mock.dart';
 import 'package:sass/transformer.dart';
 import 'package:barback/barback.dart';
-import 'package:sass/sass.dart';
+
+const testPackage = 'test';
 
 main() {
-  SassTransformer createTransformer({Map configuration, Sass sass}) {
-    configuration = configuration != null ? configuration : {};
-    sass = sass != null ? sass : new SassMock();
-    var settings = new BarbackSettings(configuration, BarbackMode.DEBUG);
-    return new SassTransformer(settings, sass);
-  }
+  group('transformer tests', () {
+    var packageProvider = new MockPackageProvider();
+    var config = {
+      'style': 'compact',
+      'include_paths': 'test/foo'
+    };
+    var barback = new Barback(packageProvider);
+    var transformer = new SassTransformer.asPlugin(new BarbackSettings(config, BarbackMode.DEBUG));
 
-  bool isPrimary(String path) =>
-    createTransformer().isPrimary(new AssetId('my_package', path));
+    test('transform with barback', () {
+      barback.updateSources([new AssetId(testPackage, 'foo/foo.scss')]);
+      barback.updateTransformers(testPackage, [[transformer]]);
 
-  Matcher assetPathContains(String string) =>
-    predicate((AssetId assetId) => assetId.path.contains(string), "Asset path contains '$string'");
-
-  group('detecting primary assets', () {
-    test('supported extensions should be recognized', () {
-      expect(isPrimary('foo.sass'), isTrue);
-      expect(isPrimary('foo.scss'), isTrue);
-      expect(isPrimary('foo/foo.scss'), isTrue);
-    });
-
-    test('unsupported extensions should not be primary assets', () {
-      expect(isPrimary('foo.bar'), isFalse);
-    });
-
-    test('files with leading underscore should also be primary assets', () {
-      expect(isPrimary('_foo.scss'), isTrue);
-      expect(isPrimary('foo/_foo.scss'), isTrue);
-    });
-  });
-
-  group("apply()", () {
-    SassMock sass;
-    SassTransformer transformer;
-
-    setUp(() {
-      sass = new SassMock()..when(callsTo("get loadPath")).alwaysReturn([]);
-    });
-
-    group("with compass", () {
-      Asset asset;
-
-      setUp(() {
-        transformer = createTransformer(configuration: {"compass": true}, sass: sass);
-        asset = new Asset.fromString(new AssetId("my_package", "primary"), "@import 'compass';");
-        sass.when(callsTo("transform")).alwaysReturn(asset.readAsString());
-      });
-
-      test("does not read compass imports", () {
-        var transform = new TransformMock()
-            ..when(callsTo("get primaryInput")).alwaysReturn(asset)
-            ..when(callsTo("readInputAsString", asset.id)).thenReturn(asset.readAsString());
-
-        transformer.apply(transform).then(expectAsync((_) {
-          var assetPathContainsCompass = predicate(
-              (AssetId assetId) => assetId.path.contains("compass"),
-              "Asset path contains 'compass'");
-          transform.getLogs(callsTo("readInputAsString", assetPathContains("compass"))).verify(neverHappened);
-        }));
-      });
+      var outputId = new AssetId(testPackage, 'foo/foo.css');
+      expect(barback.getAssetById(outputId).then((x) => x.readAsString()),
+          completion('.foo h1 {\n'
+              '  color: red; }\n'
+              ''));
     });
   });
 }
 
-class SassMock extends Mock implements Sass {
-  noSuchMethod(Invocation i) => super.noSuchMethod(i);
-}
+class MockPackageProvider extends PackageProvider {
 
-class TransformMock extends Mock implements Transform {
-  noSuchMethod(Invocation i) => super.noSuchMethod(i);
+  Iterable<String> get packages => [testPackage];
+
+  Future<Asset> getAsset(AssetId id) =>
+      new Future(() => new Asset.fromFile(id, new File('test/foo/foo.scss')));
 }
