@@ -3,10 +3,10 @@ part of sass.transformer;
 /// Class to be used to parse sass transformer options coming from pubspec.yaml file
 class TransformerOptions {
   /// entry_point: web/builder.sass - main file to build or [file1.sass, ...,fileN.sass]
-  final List<String> entry_points;
+  final List<String> entryPoints;
 
   /// include_path: /lib/sassIncludes - variable and mixims files
-  final List<String> include_paths;
+  final List<String> includePaths;
 
   /// output: web/output.css - result file. If '' same as web/input.css
   final String output;
@@ -19,8 +19,8 @@ class TransformerOptions {
   final bool copySources;
 
   TransformerOptions({
-    this.entry_points,
-    this.include_paths,
+    this.entryPoints,
+    this.includePaths,
     this.output,
     this.executable,
     this.style,
@@ -56,8 +56,8 @@ class TransformerOptions {
     }
 
     return new TransformerOptions (
-        entry_points: readEntryPoints(configuration['entry_point'], configuration['entry_points']),
-        include_paths: readStringList(configuration['include_paths']),
+        entryPoints: readEntryPoints(configuration['entry_point'], configuration['entry_points']),
+        includePaths: readStringList(configuration['include_paths']),
         output: config('output', ''),
         executable: config('executable', (Platform.operatingSystem == "windows" ? "sass.bat" : "sass")),
         style: config("style", null),

@@ -18,7 +18,7 @@ transformers:
   - sass
 ```
 
-After adding the transformer all your `.sass` and `.scss` files will be automatically transformed to
+After adding the transformer, all your `.sass` and `.scss` files will be automatically transformed to
 corresponding `.css` files.
 
 If your main file imports other files you will need to add the option `include_paths`,
@@ -50,7 +50,8 @@ transformers:
         - path/to/folder/with/other/scss2
 ```
 
-> Doing `pub serve` during development, css files are going to live in memory only. When you do `pub build` actual css files will be output in build folder
+> By using `pub serve` during development, css files are going to live in memory only.
+ Executing `pub build` creates actual css files in build folder
 
 3\. Finally in the html files you only need to import the generated css files:
 

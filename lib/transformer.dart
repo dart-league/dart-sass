@@ -14,7 +14,7 @@ class SassTransformer extends AggregateTransformer {
   SassTransformer.asPlugin(BarbackSettings settings) :
         options = new TransformerOptions.parse(settings.configuration) {
     entryPoints = new EntryPoints();
-    entryPoints.addPaths(options.entry_points);
+    entryPoints.addPaths(options.entryPoints);
     entryPoints.assureDefault(['*.sass', '*.scss', '*.html']);
   }
 
@@ -44,7 +44,7 @@ class SassTransformer extends AggregateTransformer {
         print('[dart-sass] processing: ${id.path}');
         return (new Sass()
           ..scss = id.extension == '.scss'
-          ..loadPath = options.include_paths
+          ..loadPath = options.includePaths
           ..executable = options.executable
         ).transform(content).then((output) {
           var newId = id.changeExtension('.css');
