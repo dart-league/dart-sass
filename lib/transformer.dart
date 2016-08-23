@@ -2,6 +2,7 @@ library sass.transformer;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
+import 'package:path/path.dart';
 import 'package:sass/sass.dart';
 import 'dart:io';
 
@@ -15,7 +16,7 @@ class SassTransformer extends AggregateTransformer {
         options = new TransformerOptions.parse(settings.configuration) {
     entryPoints = new EntryPoints();
     entryPoints.addPaths(options.entryPoints);
-    entryPoints.assureDefault(['*.sass', '*.scss', '*.html']);
+    entryPoints.assureDefault(['*.sass', '*.scss']);
   }
 
   final TransformerOptions options;
@@ -34,7 +35,7 @@ class SassTransformer extends AggregateTransformer {
 
       // files excluded of entry_points are not processed
       // if user don't specify entry_points, the default value is all '*.sass' and '*.html' files
-      if (!entryPoints.check(id.path)) {
+      if (!entryPoints.check(id.path) || basename(id.path).startsWith('_')) {
         // if asset is not an entry point it wild be consumed
         // (this is to no output scss files in build folder)
         return new Future(() => transform.consumePrimary(id));
@@ -42,6 +43,7 @@ class SassTransformer extends AggregateTransformer {
 
       return transform.readInputAsString(id).then((content) {
         print('[dart-sass] processing: ${id.path}');
+        options.includePaths.add(dirname(id.path));
         return (new Sass()
           ..scss = id.extension == '.scss'
           ..loadPath = options.includePaths

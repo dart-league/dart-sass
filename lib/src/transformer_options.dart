@@ -32,13 +32,13 @@ class TransformerOptions {
   factory TransformerOptions.parse(Map configuration){
     config(key, defaultValue) {
       var value = configuration[key];
-      return value != null ? value : defaultValue;
+      return value ?? defaultValue;
     }
 
-    List<String> readStringList(value) {
+    List<String> readStringList(value, [defaultValue]) {
       if (value is List<String>) return value;
       if (value is String) return [value];
-      return null;
+      return value ?? defaultValue;
     }
 
     List<String> readEntryPoints(entryPoint, entryPoints) {
@@ -57,7 +57,7 @@ class TransformerOptions {
 
     return new TransformerOptions (
         entryPoints: readEntryPoints(configuration['entry_point'], configuration['entry_points']),
-        includePaths: readStringList(configuration['include_paths']),
+        includePaths: readStringList(configuration['include_paths'], []),
         output: config('output', ''),
         executable: config('executable', (Platform.operatingSystem == "windows" ? "sass.bat" : "sass")),
         style: config("style", null),

@@ -13,17 +13,16 @@ main() {
   group('transformer tests', () {
     var packageProvider = new MockPackageProvider();
     var config = {
-      'style': 'compact',
-      'include_paths': 'test/foo'
+      'style': 'compact'
     };
     var barback = new Barback(packageProvider);
     var transformer = new SassTransformer.asPlugin(new BarbackSettings(config, BarbackMode.DEBUG));
 
     test('transform with barback', () {
-      barback.updateSources([new AssetId(testPackage, 'foo/foo.scss')]);
+      barback.updateSources([new AssetId(testPackage, 'test/foo/foo.scss')]);
       barback.updateTransformers(testPackage, [[transformer]]);
 
-      var outputId = new AssetId(testPackage, 'foo/foo.css');
+      var outputId = new AssetId(testPackage, 'test/foo/foo.css');
       expect(barback.getAssetById(outputId).then((x) => x.readAsString()),
           completion('.foo h1 {\n'
               '  color: red; }\n'
