@@ -11,12 +11,21 @@ class TransformerOptions {
 
   /// executable: sassc - command to execute sassc  - NOT USED
   final String executable;
+
+  /// Style of generated CSS
   final String style;
+
+  /// Include compass
   final bool compass;
+
+  /// Include line numbers in output
   final bool lineNumbers;
+
+  /// Copy original .scss/.sass files to output directory
   final bool copySources;
 
-  TransformerOptions({
+  /// Creates [TransformerOptions] from options values
+  TransformerOptions._({
     this.includePaths,
     this.output,
     this.executable,
@@ -26,6 +35,7 @@ class TransformerOptions {
     this.copySources
   });
 
+  /// Creates a [TransformerOptions] object from [configuration] Map
   factory TransformerOptions.parse(Map configuration){
     config(key, defaultValue) {
       var value = configuration[key];
@@ -38,7 +48,7 @@ class TransformerOptions {
       return value ?? defaultValue;
     }
 
-    return new TransformerOptions (
+    return new TransformerOptions._(
         includePaths: readStringList(configuration['include_paths'], []),
         output: config('output', ''),
         executable: config('executable', (Platform.operatingSystem == "windows" ? "sass.bat" : "sass")),

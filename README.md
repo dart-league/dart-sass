@@ -18,36 +18,43 @@ transformers:
   - sass
 ```
 
-After adding the transformer, all your `.sass` and `.scss` files will be automatically transformed to
+After adding the transformer, all your `.sass` and `.scss` files that doesn't begin with `_` will be automatically transformed to
 corresponding `.css` files.
 
-If your main file imports other files you will need to add the option `include_paths`,
- to let `sass` know which folder will be used for processing imports:
+If your main file imports other files outside the main files folder, you need to add the option `include_paths`,
+ to let `sass` know which folder will be used for processing outside imports:
 
 ```yaml
 dependencies:
   sass: any
 transformers:
   - sass:
-      entry_points: path/to/main.scss
       include_paths: path/to/folder/with/other/scss
 ```
 
-you can have multiple `entry_points` and multiple `include_paths`:
+you can have multiple `include_paths`:
 
 ```yaml
 dependencies:
   sass: any
 transformers:
   - sass:
-      entry_points:
-        - path/to/main.scss
-        - path/to/other.scss
-        - included/*.scss       # this include all scss files inside included
-        - !exlcuded/*.scss      # this exclude all scss files insde excluded
       include_paths:
         - path/to/folder/with/other/scss1
         - path/to/folder/with/other/scss2
+```
+
+If the project is going to be used as a library for third users/consumers it's highly recommended to add the
+package path in the `include_paths`. For example package [ng_bootstrap](https://pub.dartlang.org/packages/ng_bootstrap)
+requires package [bootstrap_sass](https://pub.dartlang.org/packages/bootstrap_sass). In that case it is needed that
+`bootstrap_sass` adds the `include_paths` as fallows:
+
+```yaml
+name: bootstra_sass
+...
+transformers:
+- sass:
+    include_paths: packages/bootstrap_sass/scss
 ```
 
 > By using `pub serve` during development, css files are going to live in memory only.
@@ -65,6 +72,20 @@ transformers:
     <!-- content goes hear -->
 </body>
 </html>
+```
+
+## Configuration
+
+You can also pass options to Sass if necessary:
+
+```yaml
+transformers:
+  - sass:
+      executable: /path/to/sass     # Sass executable to use
+      compass: true                 # Include compass
+      line_numbers: true            # Include line numbers in output
+      style: compact                # Style of generated CSS
+      copy_sources: true            # Copy original .scss/.sass files to output directory
 ```
 
 ## Using SassC
