@@ -34,8 +34,9 @@ class SassTransformer extends AggregateTransformer {
       }
 
       return transform.readInputAsString(id).then((content) {
-        print('[dart-sass] processing: ${id.path}');
-        options.includePaths.add(dirname(id.path));
+        print('[dart-sass] processing: ${id}');
+        //TODO: add support for no-symlinks packages
+        options.includePaths.add(dirname(id.path).replaceFirst('lib/', 'packages/${id.package}/'));
         return (new Sass()
           ..scss = id.extension == '.scss'
           ..loadPath = options.includePaths

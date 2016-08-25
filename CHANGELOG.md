@@ -3,12 +3,7 @@
 - Convert `SassTransformer` into aggregate transformer, this reduce the complexity of the code and avoid wrongly parsing `@import` inside comments (fixes #6)
 - Removed unneeded files
   * `base_sass_transformer.dart` 
-  * `sass_file.dart`
-  * `inlined_sass_file.dart`
-  * `inlined_sass_transformer.dart`
   * `run.sh`
-  * `inlined_sass_transformer_test.dart`
-  * `sass_file_test.dart`
 
 # v0.4.2 (2014-11-03)
 

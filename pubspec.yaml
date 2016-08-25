@@ -11,3 +11,4 @@ dependencies:
   utf: ^0.9.0
 dev_dependencies:
   test: ^0.12.0
+  mock: ^0.12.0
