@@ -1,3 +1,10 @@
+# v0.5.0 (2016-08-20)
+
+- Convert `SassTransformer` into aggregate transformer, this reduce the complexity of the code and avoid wrongly parsing `@import` inside comments (fixes #6)
+- Removed unneeded files
+  * `base_sass_transformer.dart` 
+  * `run.sh`
+
 # v0.4.2 (2014-11-03)
 
 - Fixed files over 1024 bytes getting truncated on Windows. ([#19](https://bitbucket.org/evidentsolutions/dart-sass/issue/19/sass-transformer-produces-zero-length)) (Thanks to Alexander Sergeev.)

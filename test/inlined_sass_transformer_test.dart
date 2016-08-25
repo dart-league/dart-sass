@@ -105,10 +105,6 @@ void main() => group("InlinedSassTransformer", () {
   });
 });
 
-class SassMock extends Mock implements Sass {
-  noSuchMethod(Invocation i) => super.noSuchMethod(i);
-}
+class SassMock extends Mock implements Sass {}
 
-class TransformMock extends Mock implements Transform {
-  noSuchMethod(Invocation i) => super.noSuchMethod(i);
-}
+class TransformMock extends Mock implements Transform {}

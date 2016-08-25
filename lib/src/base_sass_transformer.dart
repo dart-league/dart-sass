@@ -1,4 +1,4 @@
-part of sass.transformer;
+part of sass.inlined_sass_transformer;
 
 abstract class BaseSassTransformer extends Transformer implements DeclaringTransformer {
   final BarbackSettings settings;
@@ -85,7 +85,7 @@ abstract class BaseSassTransformer extends Transformer implements DeclaringTrans
       if (id != null)
         return id;
       else
-        return new Future.error(new SassException("could not resolve import '$import' (tried $assetIds)"));
+        return new Future.error(new Exception("could not resolve import '$import' (tried $assetIds)"));
     });
   }
 

@@ -40,11 +40,11 @@ class Sass {
         if (exitCode == 0) {
           return output.toString();
         } else {
-          throw new SassException(errors.length != 0 ? errors.toString() : output.toString());
+          throw new Exception(errors.length != 0 ? errors.toString() : output.toString());
         }
       });
     }).catchError((ProcessException e) {
-      throw new SassException(e.toString());
+      throw new Exception(e.toString());
     }, test: (e) => e is ProcessException);
   }
 
@@ -55,10 +55,10 @@ class Sass {
     if (sassc) {
       // check that we don't try to use features not supported by sassc
       if (!scss)
-        throw new SassException("SassC supports only scss syntax");
+        throw new Exception("SassC supports only scss syntax");
 
       if (compass)
-        throw new SassException("SassC does not support Compass");
+        throw new Exception("SassC does not support Compass");
 
     } else {
       // classic sass
@@ -86,14 +86,4 @@ class Sass {
 
     return flags;
   }
-}
-
-/// Exception thrown when there's a problem transforming Sass.
-class SassException implements Exception {
-
-  final String message;
-
-  SassException(this.message);
-
-  String toString() => message;
 }

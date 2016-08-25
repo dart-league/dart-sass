@@ -1,4 +1,4 @@
-part of sass.transformer;
+part of sass.inlined_sass_transformer;
 
 class InlinedSassFile extends SassFile {
   String _contents;

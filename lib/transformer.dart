@@ -2,45 +2,54 @@ library sass.transformer;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
-import 'package:sass/sass.dart';
 import 'package:path/path.dart';
+import 'package:sass/sass.dart';
+import 'dart:io';
 
-part 'src/base_sass_transformer.dart';
-part 'src/inlined_sass_file.dart';
-part 'src/sass_file.dart';
-part 'src/transformer_options.dart';
+part 'package:sass/src/transformer_options.dart';
 
 /// Transformer used by `pub build` and `pub serve` to convert Sass-files to CSS.
-class SassTransformer extends BaseSassTransformer implements DeclaringTransformer {
-
-  SassTransformer(BarbackSettings settings, Sass sass) :
-    super(settings, sass);
-
+class SassTransformer extends AggregateTransformer {
   SassTransformer.asPlugin(BarbackSettings settings) :
-    this(settings, new Sass());
+        options = new TransformerOptions.parse(settings.configuration);
 
-  @override
-  Future<String> processInput(Transform transform) {
-    AssetId id = transform.primaryInput.id;
-    return _readImportsRecursively(transform, id, id.package);
+  final TransformerOptions options;
+
+  // Only process assets where the extension is ".scss" or ".sass".
+  classifyPrimary(AssetId id) =>
+      ['.scss', '.sass'].any((e) => e == id.extension) ? id.extension : null;
+
+  Future apply(AggregateTransform transform) async {
+    var assets = await transform.primaryInputs.toList();
+
+    return Future.wait(assets.map((asset) {
+      var id = asset.id;
+
+      // files excluded of entry_points are not processed
+      // if user don't specify entry_points, the default value is all '*.sass' and '*.html' files
+      if (basename(id.path).startsWith('_')) {
+        // if asset is not an entry point it wild be consumed
+        // (this is to no output scss files in build folder)
+        return new Future(() => transform.consumePrimary(id));
+      }
+
+      return transform.readInputAsString(id).then((content) {
+        print('[dart-sass] processing: ${id}');
+        //TODO: add support for no-symlinks packages
+        options.includePaths.add(dirname(id.path).replaceFirst('lib/', 'packages/${id.package}/'));
+        return (new Sass()
+          ..scss = id.extension == '.scss'
+          ..loadPath = options.includePaths
+          ..executable = options.executable
+        ).transform(content).then((output) {
+          var newId = id.changeExtension('.css');
+          transform.addOutput(new Asset.fromString(newId, output));
+          // (this is to no output scss files in build folder)
+          transform.consumePrimary(id);
+        }).catchError((error) {
+          print(error);
+        });
+      });
+    }));
   }
-
-  /// Reads all the imports of module so that Barback realizes that we depend on them.
-  ///
-  /// When Barback calls the transformer to process foo.scss, it will keep track of all
-  /// read-calls so it knows which files foo.scss is dependent on. So if foo.scss
-  /// imports bar.scss (and therefore we perform dummy read on bar.scss as well),
-  /// Barback knows that if bar.scss changes, it will need to recompile foo.scss.
-  /// This doesn't matter when executing a batch build with "pub build", but it's
-  /// really important with "pub serve".
-  Future _readImportsRecursively(Transform transform, AssetId assetId, String primaryPackage) =>
-    transform.readInputAsString(assetId).then((source) {
-      var sassFile = new SassFile(source);
-      var imports = filterImports(primaryPackage, sassFile.imports);
-
-      return Future.wait(imports.map((import) =>
-        resolveImportAssetId(transform, assetId, import).then((importId) =>
-          _readImportsRecursively(transform, importId, primaryPackage))
-      )).then((_) => source);
-    });
 }

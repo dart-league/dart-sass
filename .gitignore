@@ -1,5 +1,7 @@
+/.packages
 .idea
 packages
 .packages
 .pub
 pubspec.lock
+/dart-sass.iml

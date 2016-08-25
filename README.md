@@ -7,7 +7,9 @@
 
 ## Usage
 
-Simply add the following lines to your `pubspec.yaml`:
+1\. Install [Sass](http://sass-lang.com/) and add it to your path.
+
+2\. Add the following lines to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
@@ -16,10 +18,48 @@ transformers:
   - sass
 ```
 
-After adding the transformer your `.sass` and `.scss` files will be automatically transformed to
+After adding the transformer, all your `.sass` and `.scss` files that don't begin with `_` will be automatically transformed to
 corresponding `.css` files.
 
-You need to have [Sass](http://sass-lang.com/) installed and available on the path.
+If your main file imports other files outside the main files folder, you need to add the option `include_paths`,
+ to let `sass` know which folder will be used for processing outside imports:
+
+```yaml
+dependencies:
+  sass: any
+transformers:
+  - sass:
+      include_paths: path/to/folder/with/other/scss
+```
+
+you can have multiple `include_paths`:
+
+```yaml
+dependencies:
+  sass: any
+transformers:
+  - sass:
+      include_paths:
+        - path/to/folder/with/other/scss1
+        - path/to/folder/with/other/scss2
+```
+
+> By using `pub serve` during development, css files are going to live in memory only.
+ Executing `pub build` creates actual css files in build folder
+
+3\. Finally in the html files you only need to import the generated css files:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="path/to/main.css">
+</head>
+<body>
+    <!-- content goes hear -->
+</body>
+</html>
+```
 
 ## Configuration
 
@@ -30,9 +70,9 @@ transformers:
   - sass:
       executable: /path/to/sass     # Sass executable to use
       compass: true                 # Include compass
-      line-numbers: true            # Include line numbers in output
+      line_numbers: true            # Include line numbers in output
       style: compact                # Style of generated CSS
-      copy-sources: true            # Copy original .scss/.sass files to output directory
+      copy_sources: true            # Copy original .scss/.sass files to output directory
 ```
 
 ## Using SassC
