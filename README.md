@@ -11,9 +11,9 @@ Simply add the following lines to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  sass: any
+  dart_sass_transformer: any
 transformers:
-  - sass_transformer
+  - dart_sass_transformer
 ```
 
 After adding the transformer your `.sass` and `.scss` files will be automatically transformed to
@@ -27,7 +27,7 @@ You can also pass options to Sass if necessary:
 
 ```yaml
 transformers:
-  - sass_transformer:
+  - dart_sass_transformer:
       executable: /path/to/sass     # Sass executable to use
       compass: true                 # Include compass
       line-numbers: true            # Include line numbers in output
@@ -42,7 +42,7 @@ as 'sassc' (or any path ending with 'sassc'):
 
 ```yaml
 transformers:
-  - sass_transformer:
+  - dart_sass_transformer:
       executable: sassc  # or /path/to/sassc
 ```
 
@@ -65,7 +65,7 @@ To enable the use of inlined transformer, use `sass/inlined_sass_transformer` as
 
 ```yaml
 transformers:
-  - sass_transformer/inlined_sass_transformer
+  - dart_sass_transformer/inlined_sass_transformer
       <possible configuration settings>
 ```
 

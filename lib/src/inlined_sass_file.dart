@@ -1,4 +1,4 @@
-part of sass_transformer.transformer;
+part of dart_sass_transformer.transformer;
 
 class InlinedSassFile extends SassFile {
   String _contents;

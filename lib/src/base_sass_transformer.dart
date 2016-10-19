@@ -1,4 +1,4 @@
-part of sass_transformer.transformer;
+part of dart_sass_transformer.transformer;
 
 abstract class BaseSassTransformer extends Transformer implements DeclaringTransformer {
   final BarbackSettings settings;

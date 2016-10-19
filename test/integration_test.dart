@@ -1,10 +1,10 @@
 @TestOn('vm')
-library sass_transformer.transformer.test;
+library dart_sass_transformer.transformer.test;
 
 import 'dart:async';
 import 'package:test/test.dart';
-import 'package:sass_transformer/transformer.dart';
 import 'package:barback/barback.dart';
+import 'package:dart_sass_transformer/transformer.dart';
 
 const testPackage = 'test';
 

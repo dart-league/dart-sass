@@ -1,4 +1,4 @@
-library sass_transformer;
+library dart_sass_transformer;
 
 import 'dart:async';
 import 'dart:io';

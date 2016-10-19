@@ -1,5 +1,5 @@
-# v0.5.0 (2016-10-16)
-- Package name changed from `sass` to `sass_transformer`
+# v0.5.0+1 (2016-10-16)
+- Package name changed from `sass` to `dart_sass_transformer`
 
 # v0.4.2 (2014-11-03)
 

@@ -1,9 +1,9 @@
-library sass_transformer.transformer;
+library dart_sass_transformer.transformer;
 
 import 'dart:async';
 import 'package:barback/barback.dart';
-import 'package:sass_transformer/sass.dart';
 import 'package:path/path.dart';
+import 'package:dart_sass_transformer/sass.dart';
 
 part 'src/base_sass_transformer.dart';
 part 'src/inlined_sass_file.dart';
