@@ -1,4 +1,5 @@
-## The name of this package was changed from `sass` to `sass_transformer`
+## The name of this package was changed from 
+`sass` to `dart_sass_transformer`
 
 
 
