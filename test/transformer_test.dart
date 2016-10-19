@@ -1,11 +1,11 @@
 @TestOn('vm')
-library sass.transformer.test;
+library sass_transformer.transformer.test;
 
 import 'package:test/test.dart';
 import 'package:mock/mock.dart';
-import 'package:sass/transformer.dart';
+import 'package:sass_transformer/transformer.dart';
 import 'package:barback/barback.dart';
-import 'package:sass/sass.dart';
+import 'package:sass_transformer/sass.dart';
 
 main() {
   SassTransformer createTransformer({Map configuration, Sass sass}) {

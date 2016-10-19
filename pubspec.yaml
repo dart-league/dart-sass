@@ -1,5 +1,5 @@
-name: sass
-version: 0.4.2+1
+name: sass_transformer
+version: 0.5.0
 description: >
   Sass-transformer for pub-serve and pub-build.
 author: Juha Komulainen <juha.komulainen@evident.fi>

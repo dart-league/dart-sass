@@ -1,8 +1,8 @@
 @TestOn('vm')
-library sass.test;
+library sass_transformer.test;
 
 import 'package:test/test.dart';
-import 'package:sass/sass.dart';
+import 'package:sass_transformer/sass.dart';
 
 main(List<String> args) {
   Matcher regexMatch(RegExp regexp) =>

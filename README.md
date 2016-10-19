@@ -1,7 +1,3 @@
-## The name of this package was changed from `sass` to `sass_transformer`
-
-
-
 [![Build Status](https://drone.io/bitbucket.org/evidentsolutions/dart-sass/status.png)](https://drone.io/bitbucket.org/evidentsolutions/dart-sass/latest)
 
 ## Sass integration for pub
@@ -17,7 +13,7 @@ Simply add the following lines to your `pubspec.yaml`:
 dependencies:
   sass: any
 transformers:
-  - sass
+  - sass_transformer
 ```
 
 After adding the transformer your `.sass` and `.scss` files will be automatically transformed to
@@ -31,7 +27,7 @@ You can also pass options to Sass if necessary:
 
 ```yaml
 transformers:
-  - sass:
+  - sass_transformer:
       executable: /path/to/sass     # Sass executable to use
       compass: true                 # Include compass
       line-numbers: true            # Include line numbers in output
@@ -46,7 +42,7 @@ as 'sassc' (or any path ending with 'sassc'):
 
 ```yaml
 transformers:
-  - sass:
+  - sass_transformer:
       executable: sassc  # or /path/to/sassc
 ```
 
@@ -69,7 +65,7 @@ To enable the use of inlined transformer, use `sass/inlined_sass_transformer` as
 
 ```yaml
 transformers:
-  - sass/inlined_sass_transformer
+  - sass_transformer/inlined_sass_transformer
       <possible configuration settings>
 ```
 

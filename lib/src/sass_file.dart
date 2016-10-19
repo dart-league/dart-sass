@@ -1,4 +1,4 @@
-part of sass.transformer;
+part of sass_transformer.transformer;
 
 final RegExp _importRegex = new RegExp(r"""@import\s+('(.+?)'|"(.+?)")\s*;""");
 

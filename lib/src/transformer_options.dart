@@ -1,4 +1,4 @@
-part of sass.transformer;
+part of sass_transformer.transformer;
 
 class TransformerOptions {
   final String executable;

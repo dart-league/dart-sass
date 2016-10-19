@@ -1,3 +1,6 @@
+# v0.5.0 (2016-10-16)
+- Package name changed from `sass` to `sass_transformer`
+
 # v0.4.2 (2014-11-03)
 
 - Fixed files over 1024 bytes getting truncated on Windows. ([#19](https://bitbucket.org/evidentsolutions/dart-sass/issue/19/sass-transformer-produces-zero-length)) (Thanks to Alexander Sergeev.)

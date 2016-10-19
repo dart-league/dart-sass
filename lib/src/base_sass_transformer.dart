@@ -1,4 +1,4 @@
-part of sass.transformer;
+part of sass_transformer.transformer;
 
 abstract class BaseSassTransformer extends Transformer implements DeclaringTransformer {
   final BarbackSettings settings;
