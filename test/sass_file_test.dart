@@ -1,8 +1,8 @@
 @TestOn('vm')
-library sass.sass_file_test;
+library sass_transformer.sass_file_test;
 
 import 'package:test/test.dart';
-import 'package:sass/transformer.dart';
+import 'package:sass_transformer/transformer.dart';
 
 void main() => group("SassFile", () {
   group("imports", () {

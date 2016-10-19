@@ -1,12 +1,12 @@
 @TestOn('vm')
-library sass.inlined_transformer_test;
+library sass_transformer.inlined_transformer_test;
 
 import 'dart:async';
 import 'package:test/test.dart';
 import 'package:mock/mock.dart';
 import 'package:barback/barback.dart';
-import 'package:sass/sass.dart';
-import 'package:sass/inlined_sass_transformer.dart';
+import 'package:sass_transformer/sass.dart';
+import 'package:sass_transformer/inlined_sass_transformer.dart';
 
 void main() => group("InlinedSassTransformer", () {
   InlinedSassTransformer createTransformer({Map configuration, Sass sass}) {
